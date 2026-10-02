@@ -14,6 +14,7 @@ body:
       options:
         - 年表の出来事
         - 見る場所（地域）
+        - 国の成り立ちの地図（アフリカ・日本に年代を足す／新しい地域）
     validations:
       required: true
   - type: input

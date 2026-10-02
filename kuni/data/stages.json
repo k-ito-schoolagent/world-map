@@ -1,0 +1,7 @@
+{
+  "_説明": "「国の成り立ち」の見る地域の一覧。file は kuni/data/ の中の年表ファイル（書き方は africa.json と同じ）。新しい地域を足すときは、ここに 1 行足して、年表ファイルと土台の地図（units）を用意します。くわしくは CONTRIBUTING.md。",
+  "stages": [
+    { "id": "africa", "name": "アフリカ大陸", "file": "africa.json" },
+    { "id": "japan", "name": "日本列島", "file": "japan.json" }
+  ]
+}

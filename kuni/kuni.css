@@ -1,0 +1,25 @@
+/* 国の成り立ち だけで使う見た目。土台は ../lib/style.css */
+.age-badge .map-year{font-size:11px;margin-top:4px;color:var(--muted);text-shadow:0 0 8px var(--ocean),0 0 2px var(--ocean)}
+.legend{max-height:42%;overflow-y:auto;scrollbar-width:thin;max-width:min(70%,560px)}
+.legend button{text-align:left;line-height:1.4}
+.legend i{flex:none}
+.note{max-width:240px}
+.source-label{margin-top:16px}
+.source{font-size:12px;color:var(--muted);line-height:1.8;margin:0}
+@media(max-width:760px){.legend{max-height:34%;max-width:calc(100% - 20px)}.age-badge .map-year{font-size:10px;margin-top:2px}.age-badge .period{line-height:1.5}.globe-tools{top:108px}}
+/* 年のバッジは3行なので、スマートフォンでは ＋−↺ をその下に置く（バッジの下端はおよそ 86px） */
+/* 勢力が多い場面: 地図の上の一覧はボタンでたたむ */
+.legend.collapsible{background:transparent;padding:0;display:flex;flex-direction:column;align-items:flex-start;gap:6px;max-height:none;overflow:visible}
+.legend .legend-toggle{min-height:36px;padding:0 11px;font-size:13px;background:var(--paper);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 1px 0 rgba(0,0,0,.06)}
+.legend .legend-toggle:hover{background:var(--paper-3);text-decoration:none}
+.legend .legend-toggle[aria-expanded=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.legend-list{display:flex;flex-wrap:wrap;gap:4px 14px;padding:6px 10px;border-radius:4px;background:color-mix(in srgb,var(--paper) 88%,transparent);max-height:min(300px,40svh);overflow-y:auto;scrollbar-width:thin}
+.legend-list[hidden]{display:none}
+.legend.collapsible.open{max-width:min(70%,560px)}
+/* 右の欄の一覧 */
+.polity-list{list-style:none;margin:0;padding:0}
+.polity-list button{display:flex;align-items:center;gap:8px;width:100%;min-height:36px;padding:4px 0;border:0;background:transparent;text-align:left;font-size:13px;line-height:1.5;color:inherit}
+.polity-list button:hover{background:transparent;text-decoration:underline}
+.polity-list button[aria-pressed=true]{font-weight:700}
+.polity-list i{flex:none;width:12px;height:12px;border-radius:2px;background:var(--c);border:1px solid rgba(0,0,0,.15)}
+@media(max-width:760px){.legend-list{max-height:30svh}.legend .legend-toggle{min-height:34px;font-size:12px}}

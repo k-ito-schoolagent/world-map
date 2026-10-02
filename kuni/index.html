@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>国の成り立ち（試作） — うごく世界地図</title>
+<meta name="description" content="国や統治のかたちが、人の歴史の中でどう変わってきたかを、スライダーで見る日本語教材の試作版。アフリカ大陸と日本列島をたどれます。">
+<meta property="og:title" content="国の成り立ち（試作） — うごく世界地図">
+<meta property="og:description" content="年表のつまみを動かすと、その時代の国や統治のようすが地図に出る教材の試作版。だれでも年代を足せます。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='%23cfdce6'/%3E%3Cpath d='M8 9c3-3 8-3 10 1s-1 7 2 9 7 1 6 5-7 5-11 2-9-5-9-9 0-6 2-8z' fill='%23b5402c'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@600;700&family=Noto+Sans+JP:wght@400;600&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../lib/style.css">
+<link rel="stylesheet" href="kuni.css">
+<script>try{var t=localStorage.getItem("theme");if(t==="dark"||(!t&&matchMedia("(prefers-color-scheme: dark)").matches))document.documentElement.dataset.theme="dark"}catch(e){}</script>
+</head>
+<body>
+<header>
+  <a class="brand" href="../">
+    <span class="brand-name">うごく世界地図</span>
+    <span class="brand-sub">HOW NATIONS FORMED<br>国の成り立ち（試作）</span>
+  </a>
+  <nav aria-label="ページ内">
+    <a href="../">大陸移動</a>
+    <a href="#howto">使い方</a>
+    <a href="#about">しくみ</a>
+    <a href="https://github.com/k-ito-schoolagent/world-map" rel="noopener">GitHub</a>
+  </nav>
+  <button class="theme-toggle" id="theme-toggle" aria-label="ダークモードに切り替え" aria-pressed="false">
+    <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+    <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4m11.4-11.4 1.4-1.4"/></svg>
+  </button>
+</header>
+
+<main>
+  <section class="intro">
+    <div>
+      <div class="eyebrow">How nations formed — trial version</div>
+      <h1>国のかたちは、<br>どう変わってきたか。</h1>
+      <p>つまみを動かすと、その時代に、だれがどこを治めていたかが地図に出ます。これは試作版で、いまは「アフリカ大陸」（古代エジプトから54の国まで）と「日本列島」（縄文のむらから47都道府県まで）の2つを見られます。昔の国の境は、今の国境や都道府県の形を借りて大まかに描いています。</p>
+    </div>
+  </section>
+
+  <div class="workspace">
+    <div class="stage">
+      <div class="viewport" id="viewport">
+        <canvas id="map" aria-label="国や統治のようすの地図。ドラッグで回せます"></canvas>
+        <div class="overlay regions" id="regions" role="group" aria-label="見る地域"></div>
+        <div class="overlay age-badge" aria-live="polite">
+          <div class="age" id="age-label">—</div>
+          <div class="period" id="period-label"></div>
+          <div class="map-year" id="map-year"></div>
+        </div>
+        <div class="overlay globe-tools" id="globe-tools">
+          <button type="button" id="zoom-in" aria-label="拡大">＋</button>
+          <button type="button" id="zoom-out" aria-label="縮小">−</button>
+          <button type="button" id="reset-view" aria-label="向きを戻す">↺</button>
+        </div>
+        <div class="overlay legend" id="legend" aria-label="この地図の国や勢力"></div>
+        <div class="overlay note" id="map-note">ドラッグで回す・ホイールやピンチで拡大<br>色をクリックすると、その勢力だけが濃くなります</div>
+      </div>
+      <div class="timeline">
+        <div class="tl-controls">
+          <button type="button" class="play" id="play" aria-pressed="false">▶ 再生</button>
+          <button type="button" class="step" id="step-back" aria-label="50年 昔へ">«</button>
+          <button type="button" class="step" id="step-fwd" aria-label="50年 今へ">»</button>
+          <div class="speed" role="group" aria-label="速さ">
+            <button type="button" data-speed="0.02">ゆっくり</button>
+            <button type="button" data-speed="0.05" aria-pressed="true">ふつう</button>
+            <button type="button" data-speed="0.12">はやく</button>
+          </div>
+          <button type="button" id="rewind">いちばん昔から</button>
+          <span class="spacer"></span>
+          <span class="kbd">SPACE 再生／停止 　← → 10年ずつ　SHIFT で 100年</span>
+        </div>
+        <svg id="timeline" aria-label="年表のスライダー"></svg>
+      </div>
+    </div>
+    <aside>
+      <div class="section-label">この地図の年</div>
+      <h2 id="period-name">—</h2>
+      <p class="summary" id="period-summary"></p>
+      <p class="region-note" id="region-note"></p>
+      <div class="divider"></div>
+      <div class="section-label">この地図の勢力</div>
+      <ul class="polity-list" id="polity-list" aria-label="この地図の国や勢力。押すとその勢力だけが濃くなります"></ul>
+      <div class="divider"></div>
+      <div class="section-label">確かさ</div>
+      <p class="certainty" id="certainty"></p>
+      <div class="section-label source-label">出典</div>
+      <p class="source" id="source"></p>
+      <div class="divider"></div>
+      <div class="section-label">できごと</div>
+      <ul class="events" id="events"></ul>
+      <div class="divider"></div>
+      <div class="section-label">表示</div>
+      <label class="switch-row">緯線・経線<input type="checkbox" id="opt-grid" checked></label>
+      <label class="switch-row">名前<input type="checkbox" id="opt-labels" checked></label>
+      <div class="share">
+        <button type="button" id="copy-link">この場面のリンクをコピー</button>
+      </div>
+    </aside>
+  </div>
+
+  <section class="doc" id="howto">
+    <h2>使い方</h2>
+    <ul>
+      <li><b>つまみを動かす</b>：年表の上のつまみをドラッグします。左が昔、右が今です。キーボードの ← → でも動きます（10年ずつ、Shift で 100年ずつ）。</li>
+      <li><b>地図は「その年ごろ」の1枚</b>：地図は何枚かの「場面」でできていて、つまみの年より前でいちばん新しい場面を出しています。右上の「この地図は ○○年 ごろ」で、どの年の地図かを確かめてください。</li>
+      <li><b>▶ 再生</b>：昔から今に向かって自動で進みます。</li>
+      <li><b>色をクリック</b>：地図の上の色か、右の欄の「この地図の勢力」（勢力が多い場面では地図の左下の「勢力の一覧」）を押すと、その国や勢力だけが濃くなります。もう一度押すと戻ります。</li>
+      <li><b>リンクをコピー</b>：いま見ている地域と年をそのまま開けるリンクです（例: <code>?stage=japan&amp;year=1570</code>）。</li>
+    </ul>
+    <h3>授業でのつかいかた</h3>
+    <p>まず今の地図を見せてから、「1000年前、この場所はだれが治めていたと思う？」と予想してもらい、それから動かすのがおすすめです。アフリカでは、1880年と1914年の地図を見くらべると、短いあいだに大陸が分けられたことが分かります。日本では、戦国時代の地図と廃藩置県の地図を見くらべてみてください。</p>
+  </section>
+
+  <section class="doc" id="about">
+    <h2>しくみ</h2>
+    <p>年表は、いくつかの「場面」（その年ごろの地図 1 枚）でできています。場面ごとに、そのころの国や勢力の名前と、治めていたおおよその範囲を書いてあります。</p>
+    <table>
+      <tr><th>土台の地図</th><td>今の国境（アフリカ）と今の都道府県（日本）。Natural Earth（パブリックドメイン）の実効支配線を使っています。</td></tr>
+      <tr><th>昔の国の範囲</th><td>今の国や都道府県で近いものがあれば、その形を借りて塗っています。合わないものは、円や多角形で「おおよその範囲」を描いています。</td></tr>
+      <tr><th>年表の文と出典</th><td>山川出版社『詳説世界史』『詳説日本史』、東京書籍『新しい社会 歴史』などをもとに、小学生にも読める言葉で書いています。場面ごとの出典は画面の「出典」にあります。</td></tr>
+    </table>
+    <h3>ただし書き（効果を言い過ぎないために）</h3>
+    <ul>
+      <li>場面ごとに「確かさ」を3段階で示しています。<b>LEVEL 3</b> は資料がよく一致、<b>LEVEL 2</b> はおおまかに一致（境は大ざっぱ）、<b>LEVEL 1</b> は場所も範囲も推定です。</li>
+      <li>昔の国の境は、<b>今の国境や都道府県の形で代用</b>しています。本当の境はもっと入り組んでいたり、はっきりした線がなかったりします。円や多角形の範囲も、おおよそです。</li>
+      <li>今の地図（いちばん右の場面）では、<b>西サハラは係争地なので色を塗っていません</b>。ソマリランドは国連加盟国の範囲（ソマリア）に含めています。日本の<b>北方領土</b>（ロシアが実効支配し、日本が領有権を主張）は、この試作では描いていません。</li>
+      <li>年代はおおよその値です。場面の地図は「その年ごろ」のようすで、つまみの年ちょうどの境ではありません。</li>
+    </ul>
+    <h3>参加する</h3>
+    <p>場面（年代）は <code>kuni/data/africa.json</code> と <code>kuni/data/japan.json</code> に書いてあり、ブラウザだけで書き足せます。新しい地域を足すこともできます。やり方は <a href="https://github.com/k-ito-schoolagent/world-map/blob/main/CONTRIBUTING.md#国の成り立ちに地図年代を足す" rel="noopener">CONTRIBUTING.md の「国の成り立ちに地図（年代）を足す」</a> を読んでください。</p>
+  </section>
+</main>
+
+<footer>
+  <span>うごく世界地図 — プログラム MIT / 文章 CC BY-SA 4.0</span>
+  <span>地図: Natural Earth（パブリックドメイン）</span>
+</footer>
+<div class="toast" id="toast" role="status"></div>
+
+<script src="../lib/d3.v7.min.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>

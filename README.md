@@ -27,7 +27,7 @@
 
 ### これからつくるもの（予定）
 
-**国の成り立ち**（人の歴史の時間で、国や統治のかたちがどう変わってきたか。試作としてアフリカ大陸と日本列島から）／海の高さや氷の広がり／古生物の分布。「これも見たい」は [issue](https://github.com/k-ito-schoolagent/world-map/issues/new/choose) でリクエストしてください。
+**国の成り立ち**（人の歴史の時間で、国や統治のかたちがどう変わってきたか）は、アフリカ大陸と日本列島の試作版を [`kuni/`](https://k-ito-schoolagent.github.io/world-map/kuni/) で公開しています。ほかに、海の高さや氷の広がり、古生物の分布も予定しています。「これも見たい」は [issue](https://github.com/k-ito-schoolagent/world-map/issues/new/choose) でリクエストしてください。
 
 ## 参加のしかた（くわしくは [CONTRIBUTING.md](CONTRIBUTING.md)）
 
@@ -75,6 +75,7 @@ data/continents.json  大陸の色分けと名前の位置
 _data/build.py        海岸線と回転を取得して data/ を作る
 _data/verify.py       公式の復元と比べて確かめる
 test/geo.test.js      計算のテスト
+kuni/                 国の成り立ち（試作）。index.html・app.js・scale.js と data/（地域ごとの年表 *.json と土台の地図 *-units.json）。test/kuni.test.js で検証
 publish.sh            GitHub にリポジトリをつくって Pages を有効化する
 ```
 

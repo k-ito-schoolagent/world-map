@@ -85,7 +85,7 @@ main{max-width:1600px;margin:auto;padding:0 4%}
 #timeline .tick{font-family:var(--mono);font-size:9px;fill:var(--muted);letter-spacing:.06em}
 #timeline .handle-line{stroke:var(--ink);stroke-width:2}
 #timeline .handle-knob{fill:var(--paper);stroke:var(--ink);stroke-width:2}
-#timeline .handle:focus-visible{outline:none}
+#timeline .handle:focus,#timeline .handle:focus-visible{outline:none}
 #timeline .handle:focus-visible .handle-knob{stroke:var(--focus);stroke-width:3}
 
 aside{padding:24px 24px 28px;background:var(--paper-2);border-left:1px solid var(--line);min-width:0}
