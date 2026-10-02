@@ -23,3 +23,6 @@
 .polity-list button[aria-pressed=true]{font-weight:700}
 .polity-list i{flex:none;width:12px;height:12px;border-radius:2px;background:var(--c);border:1px solid rgba(0,0,0,.15)}
 @media(max-width:760px){.legend-list{max-height:30svh}.legend .legend-toggle{min-height:34px;font-size:12px}}
+/* 変化中の説明は長いので、右寄せのまま折り返す */
+.age-badge .map-year{max-width:min(360px,48vw);margin-left:auto}
+@media(max-width:760px){.age-badge .map-year{max-width:62vw}}

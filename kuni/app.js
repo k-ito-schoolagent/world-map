@@ -1,5 +1,6 @@
 // 国の成り立ち（試作） — 画面の組み立て。年代の計算は scale.js、年表は ../lib/timeline.js。
 import { formatYear, shortYear, makeScale, keyframeAt } from "./scale.js";
+import { progress, smoothstep, planTransition, unitWeight, areasMorphable, lerpArea, lerpPoint, mixHex } from "./morph.js";
 import { createTimeline } from "../lib/timeline.js";
 
 const $ = (s) => document.querySelector(s);
@@ -19,7 +20,8 @@ const state = {
   legendOpen: false, // 勢力が多い場面で、地図の上の一覧を開いているか
   playing: false,
   speed: 0.05, // 1 秒に進む年表の長さ（0〜1）
-  opts: { grid: true, labels: true },
+  opts: { grid: true, labels: true, smooth: !reduceMotion }, // smooth: 2 枚の地図のあいだを少しずつ塗りかえる
+  frame: null, // いま描く地図 { A, B, f }
 };
 
 let stages = []; // stages.json の一覧
@@ -161,7 +163,7 @@ function requestRender() {
 
 function render() {
   const st = state.stage;
-  if (!st) return;
+  if (!st || !state.frame) return;
   const [w, h] = viewSize();
   const dpr = Math.min(2, window.devicePixelRatio || 1);
   if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
@@ -172,7 +174,9 @@ function render() {
   ctx.clearRect(0, 0, w, h);
   setupProjection();
   const path = d3.geoPath(projection, ctx);
-  const kf = currentKf;
+  const fr = state.frame;
+  const shown = fr.B && fr.f >= 0.5 ? fr.B : fr.A; // 境・印は、半分をこえたら次の地図のもの
+  const borders = shown.borders;
 
   // 海と緯線・経線
   ctx.beginPath();
@@ -192,22 +196,27 @@ function render() {
   d3.geoPath(projection, base)(st.allUnits);
   ctx.fillStyle = baseLand();
   ctx.fill(base);
-  if (kf.borders) {
+  if (borders) {
     ctx.strokeStyle = css("--line-strong");
     ctx.lineWidth = 0.6;
     ctx.stroke(base);
   }
 
-  // 前の地図から新しい地図へ、うすく重ねて切りかえる
-  let t = 1;
-  if (fade) {
-    t = Math.min(1, (performance.now() - fade.start) / FADE_MS);
-    if (t < 1) {
-      drawPolities(fade.from, kf.borders, 1, false);
-      requestRender();
-    } else fade = null;
+  if (fr.B) {
+    // 2 枚の地図のあいだ: 少しずつ塗りかえる
+    polityPaths = drawTransition(fr, borders);
+  } else {
+    // 1 枚の地図。なめらか表示を切っているときは、切りかえを短くうすく重ねる
+    let t = 1;
+    if (fade) {
+      t = Math.min(1, (performance.now() - fade.start) / FADE_MS);
+      if (t < 1) {
+        drawPolities(fade.from, borders, 1, false);
+        requestRender();
+      } else fade = null;
+    }
+    polityPaths = drawPolities(fr.A, borders, t, true);
   }
-  polityPaths = drawPolities(kf, kf.borders, t, true);
 
   // 球の縁
   ctx.beginPath();
@@ -216,15 +225,51 @@ function render() {
   ctx.lineWidth = 1;
   ctx.stroke();
 
-  drawMarkers(kf);
-  if (state.opts.labels) drawLabels(kf);
+  drawMarkers(shown);
+  if (state.opts.labels) drawLabels(fr.B ? transitionLabels(fr) : staticLabels(fr.A), shown);
+}
+
+function fillUnits(p2d, color, alpha, borders) {
+  ctx.globalAlpha = alpha;
+  ctx.fillStyle = color;
+  ctx.fill(p2d);
+  if (borders) {
+    ctx.globalAlpha = alpha * 0.5;
+    ctx.strokeStyle = css("--ink");
+    ctx.lineWidth = 0.5;
+    ctx.stroke(p2d);
+  }
+  ctx.globalAlpha = 1;
+}
+
+function fillAreas(geoms, color, alpha) {
+  const p2d = new Path2D();
+  d3.geoPath(projection, p2d)({ type: "GeometryCollection", geometries: geoms });
+  ctx.globalAlpha = alpha * 0.72;
+  ctx.fillStyle = color;
+  ctx.fill(p2d);
+  ctx.globalAlpha = alpha;
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1;
+  ctx.stroke(p2d);
+  ctx.globalAlpha = 1;
+  return p2d;
+}
+
+function outlineSelected(out, alpha) {
+  const hit = out.find((o) => o.name === state.selected);
+  if (!hit) return;
+  ctx.globalAlpha = alpha;
+  ctx.strokeStyle = css("--accent");
+  ctx.lineWidth = 1.6;
+  for (const p2d of hit.paths) ctx.stroke(p2d);
+  ctx.globalAlpha = 1;
 }
 
 function drawPolities(kf, borders, alpha, current) {
   const out = [];
   const sel = current ? state.selected : null;
   const dim = sel !== null && kf.polities.some((p) => p.name === sel);
-  const ink = css("--ink");
   for (const p of kf.polities) {
     const k = dim && p.name !== sel ? 0.3 : 1;
     const paths = [];
@@ -232,40 +277,96 @@ function drawPolities(kf, borders, alpha, current) {
     if (p.unitGeom) {
       const p2d = new Path2D();
       d3.geoPath(projection, p2d)(p.unitGeom);
-      ctx.globalAlpha = alpha * k;
-      ctx.fillStyle = color;
-      ctx.fill(p2d);
-      if (borders) {
-        ctx.globalAlpha = alpha * k * 0.5;
-        ctx.strokeStyle = ink;
-        ctx.lineWidth = 0.5;
-        ctx.stroke(p2d);
-      }
+      fillUnits(p2d, color, alpha * k, borders);
       paths.push(p2d);
     }
-    if (p.areaGeoms.length) {
-      const p2d = new Path2D();
-      d3.geoPath(projection, p2d)({ type: "GeometryCollection", geometries: p.areaGeoms });
-      ctx.globalAlpha = alpha * k * 0.72;
-      ctx.fillStyle = color;
-      ctx.fill(p2d);
-      ctx.globalAlpha = alpha * k;
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1;
-      ctx.stroke(p2d);
-      paths.push(p2d);
-    }
-    ctx.globalAlpha = 1;
+    if (p.areaGeoms.length) paths.push(fillAreas(p.areaGeoms, color, alpha * k));
     out.push({ name: p.name, paths });
   }
-  if (dim) {
-    const hit = out.find((o) => o.name === sel);
-    ctx.globalAlpha = alpha;
-    ctx.strokeStyle = css("--accent");
-    ctx.lineWidth = 1.6;
-    for (const p2d of hit.paths) ctx.stroke(p2d);
-    ctx.globalAlpha = 1;
+  if (dim) outlineSelected(out, alpha);
+  return out;
+}
+
+// 2 枚の地図のあいだの計画（ID ごとのしきい値）は、組ごとに 1 回だけ計算する
+const planCache = new WeakMap();
+function transitionPlan(A, B) {
+  const hit = planCache.get(A);
+  if (hit && hit.B === B) return hit.plan;
+  const byId = state.stage.unitById;
+  const plan = planTransition(A, B, { unitCenter: (id) => byId.get(id).centroid, distance: d3.geoDistance });
+  planCache.set(A, { B, plan });
+  return plan;
+}
+
+const onlyA = (f) => 1 - smoothstep(f, 0.35, 0.9);
+const onlyB = (f) => smoothstep(f, 0.1, 0.65);
+
+function drawTransition({ A, B, f }, borders) {
+  const st = state.stage;
+  const plan = transitionPlan(A, B);
+  const shown = f >= 0.5 ? B : A;
+  const sel = state.selected;
+  const dim = sel !== null && shown.polities.some((p) => p.name === sel);
+  const base = baseLand();
+  const paths = new Map(); // 名前 → Path2D[]（クリックで選ぶため）
+  const addPath = (name, p2d) => { if (!paths.has(name)) paths.set(name, []); paths.get(name).push(p2d); };
+
+  // 今の国・都道府県の単位: 持ち主が変わるものは、しきい値のまわりで色を混ぜて塗りかえる
+  const groups = new Map(); // 名前|色 → { name, color, geoms }
+  for (const [id, e] of plan) {
+    const u = st.unitById.get(id);
+    if (!u) continue;
+    let color, owner;
+    if (e.theta === null) {
+      color = mixHex(landColor(e.from.color), landColor(e.to.color), f);
+      owner = e.to;
+    } else {
+      const w = unitWeight(e, f);
+      color = mixHex(e.from ? landColor(e.from.color) : base, e.to ? landColor(e.to.color) : base, w);
+      owner = w >= 0.5 ? e.to : e.from;
+    }
+    const name = owner ? owner.name : null;
+    if (name === null && color === base) continue;
+    const key = `${name}|${color}`;
+    if (!groups.has(key)) groups.set(key, { name, color, geoms: [] });
+    groups.get(key).geoms.push(u.geometry);
   }
+  for (const g of groups.values()) {
+    const p2d = new Path2D();
+    d3.geoPath(projection, p2d)({ type: "GeometryCollection", geometries: g.geoms });
+    fillUnits(p2d, g.color, dim && g.name !== sel ? 0.3 : 1, borders);
+    if (g.name !== null) addPath(g.name, p2d);
+  }
+
+  // 昔の国のおおよその範囲（areas）: 同じ名前どうしは形を少しずつ変え、片方にしかないものはうすくして消す・出す
+  const bByName = new Map(B.polities.map((p) => [p.name, p]));
+  const aNames = new Set(A.polities.map((p) => p.name));
+  const k = (name) => (dim && name !== sel ? 0.3 : 1);
+  for (const pa of A.polities) {
+    const pb = bByName.get(pa.name);
+    const ca = landColor(pa.color);
+    if (pb && areasMorphable(pa.areas ?? [], pb.areas ?? [])) {
+      const geoms = pa.areas.map((a, i) => areaGeometry(lerpArea(a, pb.areas[i], f)));
+      addPath(pa.name, fillAreas(geoms, mixHex(ca, landColor(pb.color), f), k(pa.name)));
+      continue;
+    }
+    if (pa.areaGeoms.length) {
+      const p2d = fillAreas(pa.areaGeoms, ca, (pb ? 1 - f : onlyA(f)) * k(pa.name));
+      if (f < 0.5) addPath(pa.name, p2d);
+    }
+    if (pb && pb.areaGeoms.length) {
+      const p2d = fillAreas(pb.areaGeoms, landColor(pb.color), f * k(pb.name));
+      if (f >= 0.5) addPath(pb.name, p2d);
+    }
+  }
+  for (const pb of B.polities) {
+    if (aNames.has(pb.name) || !pb.areaGeoms.length) continue;
+    const p2d = fillAreas(pb.areaGeoms, landColor(pb.color), onlyB(f) * k(pb.name));
+    if (f >= 0.5) addPath(pb.name, p2d);
+  }
+
+  const out = [...paths].map(([name, ps]) => ({ name, paths: ps }));
+  if (dim) outlineSelected(out, 1);
   return out;
 }
 
@@ -302,36 +403,77 @@ function drawMarkers(kf) {
   }
 }
 
-function drawLabels(kf) {
+/** 1 枚の地図の名前: [{ name, at, weight }] */
+function staticLabels(kf) {
+  return kf.polities.map((p) => ({ name: p.name, at: p.labelAt, weight: p.weight }));
+}
+
+/** 2 枚のあいだの名前。同じ名前は位置を動かし、片方にしかない名前は、その勢力が半分より濃いあいだだけ出す */
+function transitionLabels({ A, B, f }) {
+  const items = [];
+  const bByName = new Map(B.polities.map((p) => [p.name, p]));
+  const aNames = new Set(A.polities.map((p) => p.name));
+  for (const pa of A.polities) {
+    const pb = bByName.get(pa.name);
+    if (pb) {
+      const at = pa.labelAt && pb.labelAt ? lerpPoint(pa.labelAt, pb.labelAt, f) : pb.labelAt ?? pa.labelAt;
+      items.push({ name: pa.name, at, weight: f < 0.5 ? pa.weight : pb.weight });
+    } else if (onlyA(f) > 0.5) items.push({ name: pa.name, at: pa.labelAt, weight: pa.weight });
+  }
+  for (const pb of B.polities) {
+    if (!aNames.has(pb.name) && onlyB(f) > 0.5) items.push({ name: pb.name, at: pb.labelAt, weight: pb.weight });
+  }
+  return items;
+}
+
+function drawLabels(items, shown) {
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.lineJoin = "round";
   const placed = [];
+  const sel = state.selected;
+  const onlySel = sel !== null && shown.polities.some((q) => q.name === sel);
   // 大きい勢力から置き、重なる名前は省く（選んだものは必ず出す）
-  const order = [...kf.polities].sort((a, b) => (b.name === state.selected) - (a.name === state.selected) || b.weight - a.weight);
+  const order = [...items].sort((a, b) => (b.name === sel) - (a.name === sel) || b.weight - a.weight);
   for (const p of order) {
-    if (!p.labelAt || !visible(p.labelAt)) continue;
-    if (state.selected !== null && p.name !== state.selected && kf.polities.some((q) => q.name === state.selected)) continue;
-    const xy = projection(p.labelAt);
+    if (!p.at || !visible(p.at)) continue;
+    if (onlySel && p.name !== sel) continue;
+    const xy = projection(p.at);
     if (!xy) continue;
     const size = p.weight > 0.002 ? 13 : 12;
     ctx.font = `600 ${size}px ${css("--serif")}`;
     const wText = ctx.measureText(p.name).width;
     const box = [xy[0] - wText / 2 - 2, xy[1] - size / 2 - 2, xy[0] + wText / 2 + 2, xy[1] + size / 2 + 2];
-    if (p.name !== state.selected && placed.some((b) => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1])) continue;
+    if (p.name !== sel && placed.some((b) => box[0] < b[2] && box[2] > b[0] && box[1] < b[3] && box[3] > b[1])) continue;
     placed.push(box);
     haloText(p.name, xy[0], xy[1]);
   }
 }
 
 // ---------- 年代と画面の文字 ----------
+/** 年 y の地図: A（y 以下でいちばん新しい場面）と、変化の途中なら B と進み具合 f */
+function frameAt(y) {
+  const ks = state.stage.keyframes;
+  const A = keyframeAt(ks, y);
+  const B = ks[ks.indexOf(A) + 1];
+  if (!state.opts.smooth || !B || y < A.year) return { A, B: null, f: 0 };
+  const f = progress(y, A.year, B.year, B.changeWindow);
+  if (f <= 0) return { A, B: null, f: 0 };
+  if (f >= 1) return { A: B, B: null, f: 0 }; // changeWindow が終わったら、次の地図そのもの
+  return { A, B, f };
+}
+
 function setYear(y, { fromTimeline = false } = {}) {
   const [min, max] = state.stage.range;
   state.year = Math.max(min, Math.min(max, y));
   if (!fromTimeline && timeline) timeline.set(state.year, { silent: true });
-  const kf = keyframeAt(state.stage.keyframes, state.year);
+  state.frame = frameAt(state.year);
+  const fr = state.frame;
+  // 題名・右の欄・一覧は、変化が半分をこえたら次の地図に切りかえる
+  const kf = fr.B && fr.f >= 0.5 ? fr.B : fr.A;
   if (kf !== currentKf) {
-    if (currentKf && !reduceMotion) fade = { from: currentKf, start: performance.now() };
+    if (currentKf && !fr.B && !state.opts.smooth && !reduceMotion) fade = { from: currentKf, start: performance.now() };
+    else fade = null;
     currentKf = kf;
     if (state.selected !== null && !kf.polities.some((p) => p.name === state.selected)) state.selected = null;
     updateKeyframeText();
@@ -349,8 +491,11 @@ const LEVEL_TEXT = {
 };
 
 function updateYearText() {
+  const fr = state.frame;
   $("#age-label").textContent = formatYear(state.year);
-  $("#map-year").textContent = `この地図は ${formatYear(currentKf.year)} ごろ`;
+  $("#map-year").textContent = fr.B
+    ? `${formatYear(fr.A.year)} の地図 → ${formatYear(fr.B.year)} の地図へ変化中（なめらかに描いています）`
+    : `この地図は ${formatYear(fr.A.year)} ごろ`;
   const ks = state.stage.keyframes;
   const i = ks.indexOf(currentKf);
   const from = currentKf.year;
@@ -635,6 +780,7 @@ function setupControls() {
     cb.checked = state.opts[key];
     cb.addEventListener("change", () => {
       state.opts[key] = cb.checked;
+      if (key === "smooth" && state.stage) setYear(state.year);
       requestRender();
     });
   }

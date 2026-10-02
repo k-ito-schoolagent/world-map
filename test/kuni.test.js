@@ -5,6 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { formatYear, shortYear, makeScale, keyframeAt } from "../kuni/scale.js";
+import { progress, rankThresholds, planTransition, ownersAt, ownerMap, unitWeight, areasMorphable, lerpArea, mixHex, normalizeName } from "../kuni/morph.js";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const dataDir = path.join(root, "kuni", "data");
@@ -42,6 +43,76 @@ test("keyframeAt: その年以下でいちばん新しい地図", () => {
   assert.equal(keyframeAt(ks, 249.9).year, -100);
   assert.equal(keyframeAt(ks, 250).year, 250);
   assert.equal(keyframeAt(ks, 3000).year, 720);
+});
+
+// ---------- なめらかな塗りかえ ----------
+const planar = { unitCenter: (id) => CENTERS[id], distance: (p, q) => Math.hypot(p[0] - q[0], p[1] - q[1]) };
+const CENTERS = { a: [0, 0], b: [1, 0], c: [2, 0], d: [3, 0], e: [10, 10] };
+const KA = { year: 0, polities: [{ name: "X", color: "#d98c8c", units: ["a", "b"] }, { name: "Y", color: "#7fa6d9", units: ["c", "d"] }, { name: "Z", color: "#9cb97c", units: ["e"] }] };
+const KB = { year: 100, polities: [{ name: "X", color: "#e3a3a3", units: ["a", "b", "c"] }, { name: "W", color: "#8fbf7f", units: ["d"] }] };
+
+test("progress: 両端で前の地図と次の地図にぴったり一致し、changeWindow の外は動かない", () => {
+  assert.equal(progress(0, 0, 100), 0);
+  assert.equal(progress(100, 0, 100), 1);
+  near(progress(50, 0, 100), 0.5, 1e-12);
+  assert.equal(progress(30, 0, 100, [40, 60]), 0, "窓より前は 0");
+  assert.equal(progress(60, 0, 100, [40, 60]), 1, "窓の終わりで 1");
+  assert.equal(progress(90, 0, 100, [40, 60]), 1, "窓のあとも 1");
+  let prev = -1;
+  for (let t = 0; t <= 100; t += 5) { const f = progress(t, 0, 100); assert.ok(f >= prev); prev = f; }
+});
+
+test("rankThresholds: 順位とともに増え、0 と 1 のあいだ", () => {
+  assert.deepEqual(rankThresholds(1), [0.5]);
+  for (const n of [2, 3, 7, 40]) {
+    const th = rankThresholds(n);
+    near(th[0], 0.15, 1e-12);
+    near(th[n - 1], 0.85, 1e-12);
+    for (let i = 0; i < n; i++) {
+      assert.ok(th[i] > 0 && th[i] < 1);
+      if (i) assert.ok(th[i] > th[i - 1], "順位が下がるほどあとで塗りかわる");
+    }
+  }
+});
+
+test("planTransition: f=0 で前の地図、f=1 で次の地図と同じ持ち主になる", () => {
+  const plan = planTransition(KA, KB, planar);
+  const nameMap = (kf) => new Map([...ownerMap(kf)].map(([id, p]) => [id, p.name]));
+  const at0 = ownersAt(plan, 0);
+  const at1 = ownersAt(plan, 1);
+  for (const [id, name] of nameMap(KA)) assert.equal(at0.get(id), name, `f=0 の ${id}`);
+  for (const [id, name] of nameMap(KB)) assert.equal(at1.get(id), name, `f=1 の ${id}`);
+  assert.equal(at1.get("e"), null, "次の地図で持ち主がいなければ null");
+  assert.equal(plan.get("a").theta, null, "同じ名前のままなら色だけ混ぜる");
+  assert.equal(unitWeight(plan.get("a"), 0.3), 0.3);
+  // X が c を、W が d を手に入れる（それぞれ 1 つなので 0.5）
+  assert.equal(plan.get("c").theta, 0.5);
+  assert.equal(plan.get("d").theta, 0.5);
+});
+
+test("planTransition: 新しい持ち主の中心に近いものから先に塗りかわる", () => {
+  const C = { u1: [0, 0], u2: [5, 0], u3: [12, 0] };
+  const A = { polities: [{ name: "P", units: ["u1", "u2", "u3"] }] };
+  const B = { polities: [{ name: "Q", units: ["u1", "u2", "u3"] }] };
+  const plan = planTransition(A, B, { unitCenter: (id) => C[id], distance: (p, q) => Math.abs(p[0] - q[0]) });
+  // Q の中心は (0+5+12)/3 = 5.67 → 近い順に u2(0.67), u1(5.67), u3(6.33)
+  assert.ok(plan.get("u2").theta < plan.get("u1").theta);
+  assert.ok(plan.get("u1").theta < plan.get("u3").theta);
+  // 失うだけのときは、元の中心から遠いものから
+  const lose = planTransition(A, { polities: [] }, { unitCenter: (id) => C[id], distance: (p, q) => Math.abs(p[0] - q[0]) });
+  assert.ok(lose.get("u3").theta < lose.get("u1").theta);
+});
+
+test("areas の形を少しずつ変える・色を混ぜる", () => {
+  const d1 = { type: "disc", center: [0, 0], km: 100 };
+  const d2 = { type: "disc", center: [10, 20], km: 300 };
+  assert.ok(areasMorphable([d1], [d2]));
+  assert.ok(!areasMorphable([d1], [d1, d2]));
+  assert.ok(!areasMorphable([d1], [{ type: "poly", points: [[0, 0], [1, 0], [1, 1]] }]));
+  assert.deepEqual(lerpArea(d1, d2, 0.5), { type: "disc", center: [5, 10], km: 200 });
+  assert.equal(mixHex("#000000", "#ffffff", 0), "#000000");
+  assert.equal(mixHex("#000000", "#ffffff", 1), "#ffffff");
+  assert.equal(mixHex("#000000", "#ffffff", 0.5), "#808080");
 });
 
 const { stages } = readJson("stages.json");
@@ -86,11 +157,27 @@ for (const st of stages) {
     // 地図（keyframes）
     assert.ok(stage.keyframes.length > 0);
     let prev = -Infinity;
+    let prevKf = null;
     for (const k of stage.keyframes) {
       const where = `${formatYear(k.year)}「${k.title}」`;
       assert.ok(k.year >= min && k.year <= max, `${where} が範囲内`);
       assert.ok(k.year > prev, `${where} が年の順に並んでいる`);
+      if (k.changeWindow) {
+        const [y0, y1] = k.changeWindow;
+        assert.ok(prevKf, `${where}: 最初の場面に changeWindow は書けない`);
+        assert.ok(y0 < y1, `${where}: changeWindow は [はじめ, おわり]`);
+        assert.ok(y0 >= prevKf.year && y1 <= k.year, `${where}: changeWindow [${y0}, ${y1}] が前の場面（${prevKf.year}）とこの場面のあいだにある`);
+      }
+      if (prevKf) {
+        // つづく 2 つの場面で、空白や大文字小文字だけちがう名前があると、同じ勢力として結びつかない
+        const before = new Map(prevKf.polities.map((p) => [normalizeName(p.name), p.name]));
+        for (const p of k.polities) {
+          const o = before.get(normalizeName(p.name));
+          assert.ok(o === undefined || o === p.name, `${where}: 「${o}」と「${p.name}」の書き方をそろえる`);
+        }
+      }
       prev = k.year;
+      prevKf = k;
       assert.ok([1, 2, 3].includes(k.level), `${where} の level は 1〜3`);
       assert.ok(typeof k.summary === "string" && k.summary.length > 0, `${where} に summary がある`);
       assert.ok(k.source, `${where} に source がある`);
