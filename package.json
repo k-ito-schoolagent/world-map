@@ -1,0 +1,10 @@
+{
+  "name": "world-map",
+  "private": true,
+  "type": "module",
+  "description": "うごく世界地図 — 10億年の大陸移動をスライダーで見る教材",
+  "scripts": {
+    "test": "node --test",
+    "start": "python3 -m http.server 8000"
+  }
+}

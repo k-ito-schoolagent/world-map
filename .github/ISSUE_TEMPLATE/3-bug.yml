@@ -1,0 +1,24 @@
+name: 不具合の報告
+description: 表示されない、スライダーが動かない、動きがおかしい、など
+title: "[不具合] "
+labels: ["不具合"]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: ページ
+      placeholder: 例）https://k-ito-schoolagent.github.io/world-map/
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: 何が起きたか
+      description: スクリーンショットを貼ってもらえると助かります。何億年前のところで起きたかも書いてください
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: 使っている端末・ブラウザ
+      placeholder: 例）iPad / Safari、Windows / Chrome、Chromebook

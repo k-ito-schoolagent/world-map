@@ -1,0 +1,17 @@
+{
+  "_説明": "画面の上に出る「見る場所」のボタン。だれでも追加できます（書き方は CONTRIBUTING.md）。center は今の経度・緯度。follow を true にすると、その場所の陸地を追いかけて画面の真ん中に置きつづけます。zoom は地球儀の拡大率（1 が地球全体）。",
+  "regions": [
+    { "id": "world", "name": "世界地図", "view": "map" },
+    { "id": "globe", "name": "地球儀", "view": "globe", "center": [20, 15], "zoom": 1, "follow": false },
+    { "id": "japan", "name": "日本", "view": "globe", "center": [137, 37], "zoom": 4, "follow": true,
+      "note": "日本列島を追いかけます。およそ2000万年前より前は、大陸のふちにくっついていました。" },
+    { "id": "india", "name": "インド", "view": "globe", "center": [78, 20], "zoom": 2, "follow": true,
+      "note": "インドを追いかけます。南の大陸からはなれて北へ動き、アジアにぶつかります。" },
+    { "id": "atlantic", "name": "大西洋", "view": "globe", "center": [-25, 5], "zoom": 1.3, "follow": false,
+      "note": "南アメリカとアフリカの海岸線が、ぴったり合うことをたしかめてみましょう。" },
+    { "id": "australia", "name": "オーストラリア", "view": "globe", "center": [134, -25], "zoom": 2, "follow": true,
+      "note": "オーストラリアを追いかけます。南極からはなれて北へ動きます。" },
+    { "id": "antarctica", "name": "南極", "view": "globe", "center": [0, -90], "zoom": 1.5, "follow": false,
+      "note": "南極点の真上から見ています。南極大陸がいつごろ今の場所に来たか見てみましょう。" }
+  ]
+}

@@ -1,0 +1,50 @@
+name: 年表の出来事・見る場所のリクエスト／つくります宣言
+description: 年表に入れてほしい出来事や「見る場所」、自分で足したいものを知らせる
+title: "[年表・地域] "
+labels: ["年表・地域"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        リクエストも、「自分で足します」の宣言も、どちらも歓迎です。分かる所だけ書いてください。
+  - type: dropdown
+    id: type
+    attributes:
+      label: 何を足したいか
+      options:
+        - 年表の出来事
+        - 見る場所（地域）
+    validations:
+      required: true
+  - type: input
+    id: name
+    attributes:
+      label: 出来事の名前、または場所の名前
+      placeholder: 例）恐竜の絶滅、ヒマラヤ山脈、日本
+    validations:
+      required: true
+  - type: input
+    id: when
+    attributes:
+      label: いつごろ（年表の出来事のとき）
+      description: だいたいで大丈夫です。「100万年前 = 1」の単位（Ma）でなくても、そのまま書いてください
+      placeholder: 例）約6600万年前
+  - type: textarea
+    id: why
+    attributes:
+      label: どうして入れたいか・見せたいこと
+      placeholder: 例）インドが北上してアジアにぶつかる様子を、ヒマラヤの場所で追いかけたい
+  - type: textarea
+    id: sources
+    attributes:
+      label: 参考にする本・サイト
+  - type: dropdown
+    id: who
+    attributes:
+      label: だれが足しますか
+      options:
+        - 自分で足してみます
+        - だれかに足してほしい（リクエスト）
+        - 手伝ってくれる人と一緒に足したい
+    validations:
+      required: true

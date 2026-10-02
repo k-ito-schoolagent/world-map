@@ -1,0 +1,13 @@
+{
+  "_説明": "大陸の色分けと、地図に出す名前の位置（今の経度・緯度）。名前はその場所の陸地といっしょに動きます。",
+  "groups": [
+    { "id": "north-america", "name": "北アメリカ", "color": "#d9a35f", "labels": [ { "name": "北アメリカ", "at": [-100, 45] }, { "name": "グリーンランド", "at": [-42, 72], "small": true } ] },
+    { "id": "south-america", "name": "南アメリカ", "color": "#c9b45a", "labels": [ { "name": "南アメリカ", "at": [-60, -12] } ] },
+    { "id": "eurasia", "name": "ユーラシア", "color": "#9cb97c", "labels": [ { "name": "ヨーロッパ", "at": [25, 52] }, { "name": "アジア", "at": [100, 58] }, { "name": "アラビア", "at": [45, 23], "small": true } ] },
+    { "id": "africa", "name": "アフリカ", "color": "#d08c6c", "labels": [ { "name": "アフリカ", "at": [20, 5] } ] },
+    { "id": "india", "name": "インド", "color": "#b592b8", "labels": [ { "name": "インド", "at": [78, 22] } ] },
+    { "id": "australia", "name": "オーストラリア", "color": "#e3a3a3", "labels": [ { "name": "オーストラリア", "at": [134, -25] } ] },
+    { "id": "antarctica", "name": "南極", "color": "#c7d2d8", "labels": [ { "name": "南極", "at": [60, -80] } ] },
+    { "id": "japan", "name": "日本", "color": "#c3422f", "labels": [ { "name": "日本", "at": [138.5, 36.5], "small": true } ] }
+  ]
+}

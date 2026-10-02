@@ -1,0 +1,16 @@
+name: 練習：はじめての issue
+description: GitHub の練習用。自己紹介や、見てみたい場所をひとこと書いてみてください
+title: "[練習] はじめまして"
+labels: ["練習"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        issue を書く練習にどうぞ。メンテナーが返事をしたら閉じます。気軽に書いてください。
+  - type: textarea
+    id: hello
+    attributes:
+      label: ひとこと
+      placeholder: 例）小学校で社会を教えています。日本が昔どこにあったのか見てみたいです。
+    validations:
+      required: true

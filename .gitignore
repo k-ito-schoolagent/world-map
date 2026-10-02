@@ -1,0 +1,5 @@
+_data/cache/
+.DS_Store
+__pycache__/
+node_modules/
+.playwright-mcp/

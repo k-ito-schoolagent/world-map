@@ -1,0 +1,22 @@
+name: 説明や年代のまちがい
+description: 年表の説明が不正確、年代がちがう、地図の動きがおかしい、など
+title: "[修正] "
+labels: ["説明・データ"]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: どこの説明か
+      placeholder: 例）年表の「恐竜の絶滅」、ジュラ紀の説明
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: どこが、どうちがうか
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: 根拠（教科書・論文・資料など）
