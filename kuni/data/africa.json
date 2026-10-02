@@ -1,6 +1,6 @@
 {
-  "_説明": "「国の成り立ち」アフリカ大陸の年表。keyframes の各要素が 1 枚の地図（その年ごろの国や統治のようす）です。polities の units は今の国の ID（kuni/data/africa-units.json の id、ISO 3166-1 alpha-3）、areas は今の国境と合わない昔の国のおおよその範囲（disc は中心の経度・緯度と半径 km、poly は経度・緯度の点の列）。label は名前を置く場所（省略すると自動）、markers は都などの点、borders を false にすると今の国境を描きません。fit を書くと、最初の画面をその経度・緯度の四角（[[西, 南], [東, 北]]）に合わせます（書かなければ土台の地図全体）。changeWindow: [y0, y1] を書くと、前の場面からこの場面への塗りかえを、その年のあいだだけで行います（書かなければ、前の場面からこの場面まで少しずつ）。level は確かさ（3: 資料がよく一致 / 2: おおまかに一致 / 1: 推定）。書き方は CONTRIBUTING.md。",
-  "_きまり": "今の地図は Natural Earth の実効支配線を使っています。西サハラは係争地として色を塗らず、ソマリランドは国連加盟国の範囲（ソマリア）に含めます。",
+  "_説明": "「国の成り立ち」アフリカ大陸の年表。keyframes の各要素が 1 枚の地図（その年ごろの国や統治のようす）です。polities の units は今の国の ID（kuni/data/africa-units.json の id、ISO 3166-1 alpha-3）、areas は今の国境と合わない昔の国のおおよその範囲（disc は中心の経度・緯度と半径 km、poly は経度・緯度の点の列）。label は名前を置く場所（省略すると自動）、markers は都などの点、borders を false にすると今の国境を描きません。fit を書くと、最初の画面をその経度・緯度の四角（[[西, 南], [東, 北]]）に合わせます（書かなければ土台の地図全体）。changeWindow: [y0, y1] を書くと、前の場面からこの場面への塗りかえを、その年のあいだだけで行います（書かなければ、前の場面からこの場面まで少しずつ）。polity の since: {\"ID\": 年} を書くと、その ID は独立した年などの決まった年に塗りかわります（changeWindow より優先）。level は確かさ（3: 資料がよく一致 / 2: おおまかに一致 / 1: 推定）。書き方は CONTRIBUTING.md。",
+  "_きまり": "今の地図は Natural Earth の実効支配線を使っています。西サハラは係争地として色を塗らず、ソマリランドは国連加盟国の範囲（ソマリア）に含め、境の線も描きません。",
   "id": "africa",
   "name": "アフリカ大陸",
   "units": "africa-units.json",
@@ -26,7 +26,7 @@
     },
     {
       "year": -800, "title": "クシュ王国とカルタゴ", "level": 2,
-      "summary": "ナイル川の上流にクシュ王国ができ、一時はエジプトを支配しました。地中海の北岸には、フェニキア人が港町カルタゴ（紀元前814年）を作り、貿易で栄えます。",
+      "summary": "ナイル川の上流にはクシュ王国があり、のちに（紀元前8世紀）エジプトを支配します。地中海の北岸には、フェニキア人が港町カルタゴ（紀元前814年）を作り、貿易で栄えます。",
       "polities": [
         {"name": "エジプト", "color": "#d9a05b", "areas": [{"type": "poly", "points": [[30.2, 31.6], [32.4, 31.5], [33.2, 29.5], [33.4, 24.0], [32.3, 22.0], [30.6, 23.5], [30.2, 27.5], [29.5, 30.0]]}]},
         {"name": "クシュ王国", "color": "#b58fb5", "areas": [{"type": "poly", "points": [[30.6, 22.0], [33.5, 22.0], [34.5, 18.0], [33.5, 15.5], [31.5, 15.5], [30.0, 19.0]]}]},
@@ -78,7 +78,7 @@
         {"name": "コンゴ王国", "color": "#b58fb5", "areas": [{"type": "disc", "center": [14.8, -6.0], "km": 300}]},
         {"name": "ベニン王国", "color": "#c9b45a", "areas": [{"type": "disc", "center": [5.6, 6.4], "km": 150}]},
         {"name": "エチオピア帝国", "color": "#e3a3a3", "areas": [{"type": "disc", "center": [38.5, 11.0], "km": 300}]},
-        {"name": "ポルトガルの砦", "color": "#7fa6d9", "areas": [{"type": "disc", "center": [-1.35, 5.1], "km": 60}, {"type": "disc", "center": [13.2, -8.8], "km": 60}, {"type": "disc", "center": [40.7, -15.0], "km": 60}]}
+        {"name": "ポルトガルの砦", "color": "#7fa6d9", "areas": [{"type": "disc", "center": [-1.35, 5.1], "km": 60}, {"type": "disc", "center": [40.7, -15.0], "km": 60}]}
       ],
       "source": "山川出版社『詳説世界史』"
     },
@@ -100,19 +100,17 @@
       "source": "山川出版社『詳説世界史』、Britannica"
     },
     {
-      "year": 1880, "title": "分割の前夜", "level": 3,
-      "summary": "フランスはアルジェリアを植民地にし、イギリスはケープ植民地とナタールを持っています。それでもアフリカの大部分は、ズールー王国やソコト帝国などアフリカの人々の国でした。1884年のベルリン会議で、ヨーロッパの国々はアフリカを分け合う取り決めをします。",
+      "year": 1880, "title": "分割の前夜", "level": 2,
+      "summary": "フランスはアルジェリアを植民地にし、イギリスはケープ植民地とナタールを持っています。それでもアフリカの大部分は、ソコト帝国やエチオピア帝国などアフリカの人々の国でした。1884年のベルリン会議で、ヨーロッパの国々はアフリカを分け合う取り決めをします。",
       "polities": [
-        {"name": "フランス", "color": "#7fa6d9", "areas": [{"type": "poly", "points": [[-2.0, 35.5], [8.5, 37.0], [8.0, 34.0], [3.0, 34.0], [-1.0, 34.0]]}, {"type": "disc", "center": [-16.5, 14.7], "km": 150}, {"type": "disc", "center": [9.5, 0.5], "km": 120}]},
-        {"name": "イギリス", "color": "#d98c8c", "areas": [{"type": "poly", "points": [[17.8, -32.5], [20.0, -31.0], [26.0, -30.0], [28.5, -32.5], [26.0, -34.0], [20.0, -34.8], [18.0, -34.2]]}, {"type": "disc", "center": [30.5, -29.6], "km": 130}, {"type": "disc", "center": [-13.2, 8.5], "km": 80}, {"type": "disc", "center": [-0.2, 5.6], "km": 110}, {"type": "disc", "center": [3.4, 6.5], "km": 80}]},
-        {"name": "ポルトガル", "color": "#8fbf7f", "areas": [{"type": "disc", "center": [13.2, -8.8], "km": 220}, {"type": "disc", "center": [40.7, -15.0], "km": 180}, {"type": "disc", "center": [-15.6, 11.8], "km": 70}]},
-        {"name": "エジプト（オスマン帝国の下で自立）", "color": "#9cb97c", "units": ["EGY", "SDN", "SSD"]},
-        {"name": "モロッコ", "color": "#cfe0c3", "units": ["MAR"]},
+        {"name": "フランス", "color": "#7fa6d9", "areas": [{"type": "disc", "center": [9.5, 0.5], "km": 120}], "units": ["DZA", "SEN"]},
+        {"name": "イギリス", "color": "#d98c8c", "areas": [{"type": "poly", "points": [[17.8, -32.5], [20.0, -31.0], [26.0, -30.0], [28.5, -32.5], [26.0, -34.0], [20.0, -34.8], [18.0, -34.2]]}, {"type": "disc", "center": [30.5, -29.6], "km": 130}, {"type": "disc", "center": [3.4, 6.5], "km": 80}], "units": ["GHA", "SLE", "LSO"]},
+        {"name": "ポルトガル", "color": "#8fbf7f", "areas": [{"type": "disc", "center": [-15.6, 11.8], "km": 70}], "units": ["AGO", "MOZ", "CPV", "STP"]},
+        {"name": "エジプト（オスマン帝国の下で自立）", "color": "#b8c8a0", "units": ["EGY", "SDN", "SSD"]},
+        {"name": "オスマン帝国", "color": "#9cb97c", "units": ["LBY"]},
+        {"name": "独立国", "color": "#b5402c", "units": ["MAR", "LBR", "ETH"]},
         {"name": "チュニジア（1881年にフランス保護領）", "color": "#c9c27a", "units": ["TUN"]},
-        {"name": "エチオピア帝国", "color": "#e3a3a3", "units": ["ETH", "ERI"]},
-        {"name": "リベリア", "color": "#c9b45a", "units": ["LBR"]},
-        {"name": "ズールー王国", "color": "#d9a05b", "areas": [{"type": "disc", "center": [31.6, -28.2], "km": 130}]},
-        {"name": "ボーア人の共和国（トランスヴァール・オレンジ）", "color": "#d0c0a0", "areas": [{"type": "disc", "center": [28.5, -25.5], "km": 260}, {"type": "disc", "center": [26.5, -29.0], "km": 170}]},
+        {"name": "ボーア人の共和国（トランスヴァールは1877〜81年イギリス領）", "color": "#d0c0a0", "areas": [{"type": "disc", "center": [28.5, -25.5], "km": 260}, {"type": "disc", "center": [26.5, -29.0], "km": 170}]},
         {"name": "ソコト帝国", "color": "#b58fb5", "areas": [{"type": "disc", "center": [6.5, 12.0], "km": 420}]},
         {"name": "ザンジバル", "color": "#9aa0a6", "areas": [{"type": "disc", "center": [39.2, -6.2], "km": 90}]},
         {"name": "マダガスカル王国", "color": "#8fb3a8", "units": ["MDG"]}
@@ -123,17 +121,18 @@
       "year": 1900, "title": "分割が進む", "level": 3, "borders": true, "changeWindow": [1884, 1900],
       "summary": "1884年のベルリン会議のあと、ヨーロッパの国々は競ってアフリカの内陸へ進みました。1896年、エチオピアはアドワの戦いでイタリア軍を破り、独立を守ります。1898年にはスーダンのファショダで、イギリスとフランスの軍がにらみ合いました。",
       "polities": [
-        {"name": "フランス", "color": "#7fa6d9", "units": ["DZA", "TUN", "SEN", "GIN", "CIV", "BEN", "MLI", "BFA", "GAB", "COG", "CAF", "MDG", "DJI", "COM"]},
-        {"name": "イギリス", "color": "#d98c8c", "units": ["EGY", "SDN", "SSD", "KEN", "UGA", "SOL", "NGA", "GHA", "SLE", "GMB", "BWA", "ZWE", "ZMB", "MWI", "LSO", "SWZ"]},
-        {"name": "イギリス領とボーア人の共和国（南アフリカ）", "color": "#d0c0a0", "units": ["ZAF"]},
-        {"name": "ドイツ", "color": "#9aa0a6", "units": ["TGO", "CMR", "NAM", "TZA", "RWA", "BDI"]},
-        {"name": "コンゴ自由国（ベルギー王の私有地）", "color": "#e3c35a", "units": ["COD"]},
-        {"name": "ポルトガル", "color": "#8fbf7f", "units": ["AGO", "MOZ", "GNB", "CPV", "STP"]},
-        {"name": "イタリア", "color": "#c9c27a", "units": ["ERI", "SOM"]},
-        {"name": "スペイン", "color": "#e0a86b", "units": ["SAH", "GNQ"]},
+        {"name": "フランス", "color": "#7fa6d9", "units": ["DZA", "TUN", "SEN", "GIN", "CIV", "BEN", "MLI", "BFA", "GAB", "COG", "CAF", "MDG", "DJI", "COM", "TCD"], "since": {"TUN": 1881, "GAB": 1885, "COG": 1882, "CIV": 1893, "GIN": 1891, "MLI": 1892, "BEN": 1894, "BFA": 1896, "CAF": 1894, "MDG": 1896, "DJI": 1888, "COM": 1886, "TCD": 1900}},
+        {"name": "イギリス", "color": "#d98c8c", "units": ["EGY", "SDN", "SSD", "KEN", "UGA", "GHA", "SLE", "GMB", "BWA", "ZWE", "ZMB", "MWI", "LSO"], "since": {"EGY": 1882, "SDN": 1899, "SSD": 1899, "KEN": 1895, "UGA": 1894, "MWI": 1891, "ZMB": 1891, "ZWE": 1890, "BWA": 1885, "GMB": 1888}},
+        {"name": "イギリス領とボーア人の共和国（南アフリカ）", "color": "#d0c0a0", "units": ["ZAF", "SWZ"], "since": {"SWZ": 1894}},
+        {"name": "ソコト帝国（イギリスが進出中）", "color": "#b58fb5", "units": ["NGA"]},
+        {"name": "ドイツ", "color": "#9aa0a6", "units": ["TGO", "CMR", "NAM", "TZA", "RWA", "BDI"], "since": {"TGO": 1884, "CMR": 1884, "NAM": 1884, "TZA": 1885, "RWA": 1899, "BDI": 1899}},
+        {"name": "コンゴ自由国（ベルギー王の私有地）", "color": "#e3c35a", "units": ["COD"], "since": {"COD": 1885}},
+        {"name": "ポルトガル", "color": "#8fbf7f", "units": ["AGO", "MOZ", "GNB", "CPV", "STP"], "since": {"GNB": 1886}},
+        {"name": "イタリア", "color": "#c9c27a", "units": ["ERI", "SOM"], "since": {"ERI": 1890, "SOM": 1889}},
+        {"name": "スペイン", "color": "#e0a86b", "units": ["SAH", "GNQ"], "since": {"SAH": 1884, "GNQ": 1885}},
         {"name": "オスマン帝国", "color": "#9cb97c", "units": ["LBY"]},
         {"name": "独立国", "color": "#b5402c", "units": ["ETH", "LBR", "MAR"]},
-        {"name": "まだ占領されていない地域（フランスが進出中）", "color": "#d8cfa8", "units": ["MRT", "NER", "TCD"]}
+        {"name": "まだ占領されていない地域（フランスが進出中）", "color": "#d8cfa8", "units": ["MRT", "NER"]}
       ],
       "source": "山川出版社『詳説世界史』、帝国書院『最新世界史図説タペストリー』"
     },
@@ -141,12 +140,12 @@
       "year": 1914, "title": "ヨーロッパの国々による分割", "level": 3,
       "summary": "1914年、独立を保っていたのはエチオピアとリベリアだけ。残りはイギリス・フランス・ドイツ・ベルギー・ポルトガル・イタリア・スペインの植民地に分けられました。このとき引かれた直線の国境が、今の国境のもとになっています。",
       "polities": [
-        {"name": "イギリス", "color": "#d98c8c", "units": ["EGY", "SDN", "SSD", "KEN", "UGA", "ZAF", "LSO", "SWZ", "BWA", "ZWE", "ZMB", "MWI", "NGA", "GHA", "SLE", "GMB", "SOL"]},
-        {"name": "フランス", "color": "#7fa6d9", "units": ["MAR", "DZA", "TUN", "MRT", "SEN", "MLI", "GIN", "CIV", "BFA", "NER", "BEN", "TCD", "CAF", "COG", "GAB", "MDG", "DJI", "COM"]},
+        {"name": "イギリス", "color": "#d98c8c", "units": ["EGY", "SDN", "SSD", "KEN", "UGA", "ZAF", "LSO", "SWZ", "BWA", "ZWE", "ZMB", "MWI", "NGA", "GHA", "SLE", "GMB"], "since": {"ZAF": 1902, "SWZ": 1902, "NGA": 1903}},
+        {"name": "フランス", "color": "#7fa6d9", "units": ["MAR", "DZA", "TUN", "MRT", "SEN", "MLI", "GIN", "CIV", "BFA", "NER", "BEN", "TCD", "CAF", "COG", "GAB", "MDG", "DJI", "COM"], "since": {"MAR": 1912, "NER": 1904, "MRT": 1904}},
         {"name": "ドイツ", "color": "#9aa0a6", "units": ["TGO", "CMR", "NAM", "TZA", "RWA", "BDI"]},
-        {"name": "ベルギー", "color": "#e3c35a", "units": ["COD"]},
+        {"name": "ベルギー", "color": "#e3c35a", "units": ["COD"], "since": {"COD": 1908}},
         {"name": "ポルトガル", "color": "#8fbf7f", "units": ["AGO", "MOZ", "GNB", "CPV", "STP"]},
-        {"name": "イタリア", "color": "#c9c27a", "units": ["LBY", "ERI", "SOM"]},
+        {"name": "イタリア", "color": "#c9c27a", "units": ["LBY", "ERI", "SOM"], "since": {"LBY": 1911}},
         {"name": "スペイン", "color": "#e0a86b", "units": ["SAH", "GNQ"]},
         {"name": "独立国", "color": "#b5402c", "units": ["ETH", "LBR"]}
       ],
@@ -156,14 +155,14 @@
       "year": 1935, "title": "委任統治とエジプトの独立", "level": 3, "changeWindow": [1919, 1922],
       "summary": "第一次世界大戦に負けたドイツは植民地を失い、その土地は国際連盟の委任統治領として、イギリス・フランス・ベルギー・南アフリカが治めることになりました。トーゴとカメルーンは一部がイギリス領になりました（地図では全体をフランスの色にしています）。エジプトは1922年に独立します。1935年にはイタリアがエチオピアに攻めこみ、1936年から1941年まで占領しました。",
       "polities": [
-        {"name": "イギリス", "color": "#d98c8c", "units": ["SDN", "SSD", "KEN", "UGA", "TZA", "LSO", "SWZ", "BWA", "ZWE", "ZMB", "MWI", "NGA", "GHA", "SLE", "GMB", "SOL"]},
-        {"name": "フランス", "color": "#7fa6d9", "units": ["MAR", "DZA", "TUN", "MRT", "SEN", "MLI", "GIN", "CIV", "BFA", "NER", "BEN", "TCD", "CAF", "COG", "GAB", "MDG", "DJI", "COM", "TGO", "CMR"]},
-        {"name": "ベルギー", "color": "#e3c35a", "units": ["COD", "RWA", "BDI"]},
+        {"name": "イギリス", "color": "#d98c8c", "units": ["SDN", "SSD", "KEN", "UGA", "TZA", "LSO", "SWZ", "BWA", "ZWE", "ZMB", "MWI", "NGA", "GHA", "SLE", "GMB"], "since": {"TZA": 1919}},
+        {"name": "フランス", "color": "#7fa6d9", "units": ["MAR", "DZA", "TUN", "MRT", "SEN", "MLI", "GIN", "CIV", "BFA", "NER", "BEN", "TCD", "CAF", "COG", "GAB", "MDG", "DJI", "COM", "TGO", "CMR"], "since": {"TGO": 1919, "CMR": 1919}},
+        {"name": "ベルギー", "color": "#e3c35a", "units": ["COD", "RWA", "BDI"], "since": {"RWA": 1919, "BDI": 1919}},
         {"name": "ポルトガル", "color": "#8fbf7f", "units": ["AGO", "MOZ", "GNB", "CPV", "STP"]},
         {"name": "イタリア", "color": "#c9c27a", "units": ["LBY", "ERI", "SOM"]},
         {"name": "スペイン", "color": "#e0a86b", "units": ["SAH", "GNQ"]},
-        {"name": "南アフリカ連邦の統治", "color": "#d0c0a0", "units": ["NAM"]},
-        {"name": "独立国", "color": "#b5402c", "units": ["ETH", "LBR", "EGY", "ZAF"]}
+        {"name": "南アフリカ連邦の統治", "color": "#d0c0a0", "units": ["NAM"], "since": {"NAM": 1919}},
+        {"name": "独立国", "color": "#b5402c", "units": ["ETH", "LBR", "EGY", "ZAF"], "since": {"EGY": 1922, "ZAF": 1931}}
       ],
       "source": "山川出版社『詳説世界史』、帝国書院『最新世界史図説タペストリー』"
     },
@@ -171,11 +170,11 @@
       "year": 1950, "title": "第二次世界大戦のあと", "level": 3, "changeWindow": [1941, 1947],
       "summary": "ドイツの植民地は第一次世界大戦のあとイギリス・フランス・ベルギー・南アフリカに分けられ、イタリアは第二次世界大戦に負けて植民地を失いました。エジプトは1922年に独立しています。多くの地域で独立を求める運動が強くなっていきます。",
       "polities": [
-        {"name": "イギリス", "color": "#d98c8c", "units": ["SDN", "SSD", "KEN", "UGA", "TZA", "LSO", "SWZ", "BWA", "ZWE", "ZMB", "MWI", "NGA", "GHA", "SLE", "GMB", "SOL", "LBY", "ERI", "TGO", "CMR"]},
-        {"name": "フランス", "color": "#7fa6d9", "units": ["MAR", "DZA", "TUN", "MRT", "SEN", "MLI", "GIN", "CIV", "BFA", "NER", "BEN", "TCD", "CAF", "COG", "GAB", "MDG", "DJI", "COM"]},
+        {"name": "イギリス", "color": "#d98c8c", "units": ["SDN", "SSD", "KEN", "UGA", "TZA", "LSO", "SWZ", "BWA", "ZWE", "ZMB", "MWI", "NGA", "GHA", "SLE", "GMB", "LBY", "ERI"], "since": {"LBY": 1943, "ERI": 1941}},
+        {"name": "フランス", "color": "#7fa6d9", "units": ["MAR", "DZA", "TUN", "MRT", "SEN", "MLI", "GIN", "CIV", "BFA", "NER", "BEN", "TCD", "CAF", "COG", "GAB", "MDG", "DJI", "COM", "TGO", "CMR"]},
         {"name": "ベルギー", "color": "#e3c35a", "units": ["COD", "RWA", "BDI"]},
         {"name": "ポルトガル", "color": "#8fbf7f", "units": ["AGO", "MOZ", "GNB", "CPV", "STP"]},
-        {"name": "イタリア（信託統治）", "color": "#c9c27a", "units": ["SOM"]},
+        {"name": "イタリア（信託統治）", "color": "#c9c27a", "units": ["SOM"], "since": {"SOM": 1950}},
         {"name": "スペイン", "color": "#e0a86b", "units": ["SAH", "GNQ"]},
         {"name": "南アフリカ連邦の統治", "color": "#d0c0a0", "units": ["NAM"]},
         {"name": "独立国", "color": "#b5402c", "units": ["ETH", "LBR", "EGY", "ZAF"]}
@@ -184,10 +183,15 @@
     },
     {
       "year": 1960, "title": "アフリカの年", "level": 3, "changeWindow": [1956, 1960],
-      "summary": "1957年のガーナを皮切りに独立が続き、1960年には17の国が独立しました。この年を「アフリカの年」とよびます。植民地時代に引かれた国境がそのまま国の形になったので、ひとつの国にいろいろな民族が住み、ひとつの民族が国境で分かれることになりました。",
+      "summary": "サハラより南では、1957年のガーナを皮切りに独立が続き、1960年には17の国が独立しました。この年を「アフリカの年」とよびます。植民地時代に引かれた国境がそのまま国の形になったので、ひとつの国にいろいろな民族が住み、ひとつの民族が国境で分かれることになりました。",
       "polities": [
-        {"name": "独立国", "color": "#b5402c", "units": ["EGY", "ETH", "LBR", "ZAF", "LBY", "SDN", "SSD", "MAR", "TUN", "GHA", "GIN", "CMR", "TGO", "MLI", "SEN", "MDG", "COD", "SOM", "SOL", "BEN", "NER", "BFA", "CIV", "TCD", "CAF", "COG", "GAB", "NGA", "MRT", "ERI"]},
-        {"name": "まだ植民地", "color": "#b9b2a6", "units": ["DZA", "KEN", "UGA", "TZA", "RWA", "BDI", "ZMB", "MWI", "ZWE", "BWA", "LSO", "SWZ", "GMB", "SLE", "AGO", "MOZ", "GNB", "CPV", "STP", "NAM", "SAH", "GNQ", "DJI", "COM"]}
+        {"name": "独立国", "color": "#b5402c", "units": ["EGY", "ETH", "LBR", "ZAF", "LBY", "SDN", "SSD", "MAR", "TUN", "GHA", "GIN", "CMR", "TGO", "MLI", "SEN", "MDG", "COD", "SOM", "BEN", "NER", "BFA", "CIV", "TCD", "CAF", "COG", "GAB", "NGA", "MRT", "ERI"], "since": {"LBY": 1951, "SDN": 1956, "SSD": 1956, "MAR": 1956, "TUN": 1956, "GHA": 1957, "GIN": 1958, "ERI": 1952, "CMR": 1960, "TGO": 1960, "MLI": 1960, "SEN": 1960, "MDG": 1960, "COD": 1960, "SOM": 1960, "BEN": 1960, "NER": 1960, "BFA": 1960, "CIV": 1960, "TCD": 1960, "CAF": 1960, "COG": 1960, "GAB": 1960, "NGA": 1960, "MRT": 1960}},
+        {"name": "イギリス", "color": "#d98c8c", "units": ["KEN", "UGA", "TZA", "LSO", "SWZ", "BWA", "ZWE", "ZMB", "MWI", "SLE", "GMB"]},
+        {"name": "フランス", "color": "#7fa6d9", "units": ["DZA", "DJI", "COM"]},
+        {"name": "ベルギー", "color": "#e3c35a", "units": ["RWA", "BDI"]},
+        {"name": "ポルトガル", "color": "#8fbf7f", "units": ["AGO", "MOZ", "GNB", "CPV", "STP"]},
+        {"name": "スペイン", "color": "#e0a86b", "units": ["SAH", "GNQ"]},
+        {"name": "南アフリカ連邦の統治", "color": "#d0c0a0", "units": ["NAM"]}
       ],
       "source": "山川出版社『詳説世界史』、外務省『各国・地域情勢』"
     },
@@ -195,19 +199,25 @@
       "year": 1966, "title": "独立がつづく", "level": 3, "changeWindow": [1961, 1966],
       "summary": "1960年代には、東アフリカや南部アフリカでも独立がつづきました。ポルトガルは植民地を手放さず、独立を求める人々との戦争になります。ローデシアでは1965年に白人の政府が独立を宣言しましたが、黒人の人々もふくめた国として独立したのは1980年（ジンバブエ）でした。",
       "polities": [
-        {"name": "独立国", "color": "#b5402c", "units": ["EGY", "ETH", "ERI", "LBR", "ZAF", "LBY", "SDN", "SSD", "MAR", "TUN", "GHA", "GIN", "CMR", "TGO", "MLI", "SEN", "MDG", "COD", "SOM", "SOL", "BEN", "NER", "BFA", "CIV", "TCD", "CAF", "COG", "GAB", "NGA", "MRT", "DZA", "KEN", "UGA", "TZA", "RWA", "BDI", "ZMB", "MWI", "BWA", "LSO", "GMB", "SLE"]},
-        {"name": "ローデシア（白人政権が独立を宣言）", "color": "#e0a86b", "units": ["ZWE"]},
-        {"name": "まだ植民地", "color": "#b9b2a6", "units": ["NAM", "AGO", "MOZ", "GNB", "CPV", "STP", "SWZ", "GNQ", "DJI", "COM", "SAH"]}
+        {"name": "独立国", "color": "#b5402c", "units": ["EGY", "ETH", "ERI", "LBR", "ZAF", "LBY", "SDN", "SSD", "MAR", "TUN", "GHA", "GIN", "CMR", "TGO", "MLI", "SEN", "MDG", "COD", "SOM", "BEN", "NER", "BFA", "CIV", "TCD", "CAF", "COG", "GAB", "NGA", "MRT", "DZA", "KEN", "UGA", "TZA", "RWA", "BDI", "ZMB", "MWI", "BWA", "LSO", "GMB", "SLE"], "since": {"SLE": 1961, "TZA": 1961, "DZA": 1962, "UGA": 1962, "RWA": 1962, "BDI": 1962, "KEN": 1963, "ZMB": 1964, "MWI": 1964, "GMB": 1965, "BWA": 1966, "LSO": 1966}},
+        {"name": "ローデシア（白人政権が独立を宣言）", "color": "#a8a0d0", "units": ["ZWE"], "since": {"ZWE": 1965}},
+        {"name": "イギリス", "color": "#d98c8c", "units": ["SWZ"]},
+        {"name": "フランス", "color": "#7fa6d9", "units": ["DJI", "COM"]},
+        {"name": "ポルトガル", "color": "#8fbf7f", "units": ["AGO", "MOZ", "GNB", "CPV", "STP"]},
+        {"name": "スペイン", "color": "#e0a86b", "units": ["SAH", "GNQ"]},
+        {"name": "南アフリカ連邦の統治", "color": "#d0c0a0", "units": ["NAM"]}
       ],
       "source": "山川出版社『詳説世界史』、外務省『各国・地域情勢』"
     },
     {
       "year": 1975, "title": "ほとんどの国が独立", "level": 3,
-      "summary": "アルジェリアは戦争のすえ1962年に独立。ポルトガルの植民地（アンゴラ・モザンビークなど）は1975年に独立しました。残るのは、白人政権のローデシア（今のジンバブエ）と南アフリカが統治するナミビア、そしてジブチです。",
+      "summary": "アルジェリアは戦争のすえ1962年に独立。ポルトガルの植民地（アンゴラ・モザンビークなど）は1975年に独立しました。残るのは、白人政権のローデシア（今のジンバブエ）と南アフリカが統治するナミビア、ジブチ、そして西サハラ（1976年にスペインが撤退し、今も係争中）です。",
       "polities": [
-        {"name": "独立国", "color": "#b5402c", "units": ["EGY", "ETH", "ERI", "LBR", "ZAF", "LBY", "SDN", "SSD", "MAR", "TUN", "GHA", "GIN", "CMR", "TGO", "MLI", "SEN", "MDG", "COD", "SOM", "SOL", "BEN", "NER", "BFA", "CIV", "TCD", "CAF", "COG", "GAB", "NGA", "MRT", "DZA", "KEN", "UGA", "TZA", "RWA", "BDI", "ZMB", "MWI", "BWA", "LSO", "SWZ", "GMB", "SLE", "AGO", "MOZ", "GNB", "CPV", "STP", "GNQ", "COM"]},
-        {"name": "ローデシア（白人政権が独立を宣言）", "color": "#e0a86b", "units": ["ZWE"]},
-        {"name": "まだ植民地", "color": "#b9b2a6", "units": ["NAM", "DJI", "SAH"]}
+        {"name": "独立国", "color": "#b5402c", "units": ["EGY", "ETH", "ERI", "LBR", "ZAF", "LBY", "SDN", "SSD", "MAR", "TUN", "GHA", "GIN", "CMR", "TGO", "MLI", "SEN", "MDG", "COD", "SOM", "BEN", "NER", "BFA", "CIV", "TCD", "CAF", "COG", "GAB", "NGA", "MRT", "DZA", "KEN", "UGA", "TZA", "RWA", "BDI", "ZMB", "MWI", "BWA", "LSO", "SWZ", "GMB", "SLE", "AGO", "MOZ", "GNB", "CPV", "STP", "GNQ", "COM"], "since": {"SWZ": 1968, "GNQ": 1968, "GNB": 1974, "MOZ": 1975, "CPV": 1975, "COM": 1975, "STP": 1975, "AGO": 1975}},
+        {"name": "ローデシア（白人政権が独立を宣言）", "color": "#a8a0d0", "units": ["ZWE"]},
+        {"name": "フランス", "color": "#7fa6d9", "units": ["DJI"]},
+        {"name": "スペイン", "color": "#e0a86b", "units": ["SAH"]},
+        {"name": "南アフリカ連邦の統治", "color": "#d0c0a0", "units": ["NAM"]}
       ],
       "source": "外務省『各国・地域情勢』"
     },
@@ -215,20 +225,20 @@
       "year": 1994, "title": "アパルトヘイトの終わり", "level": 3, "changeWindow": [1990, 1994],
       "summary": "南アフリカでは、人種で人を分ける制度（アパルトヘイト）が長く続きましたが、1994年にすべての人種が参加する選挙が行われ、マンデラが大統領になりました。ナミビアは1990年、エリトリアは1993年に独立しています。",
       "polities": [
-        {"name": "独立国", "color": "#b5402c", "units": ["EGY", "ETH", "ERI", "LBR", "LBY", "SDN", "SSD", "MAR", "TUN", "GHA", "GIN", "CMR", "TGO", "MLI", "SEN", "MDG", "COD", "SOM", "SOL", "BEN", "NER", "BFA", "CIV", "TCD", "CAF", "COG", "GAB", "NGA", "MRT", "DZA", "KEN", "UGA", "TZA", "RWA", "BDI", "ZMB", "MWI", "BWA", "LSO", "SWZ", "GMB", "SLE", "AGO", "MOZ", "GNB", "CPV", "STP", "GNQ", "COM", "ZWE", "NAM", "DJI"]},
-        {"name": "南アフリカ（全人種の選挙）", "color": "#e3c35a", "units": ["ZAF"]}
+        {"name": "独立国", "color": "#b5402c", "units": ["EGY", "ETH", "ERI", "LBR", "LBY", "SDN", "SSD", "MAR", "TUN", "GHA", "GIN", "CMR", "TGO", "MLI", "SEN", "MDG", "COD", "SOM", "BEN", "NER", "BFA", "CIV", "TCD", "CAF", "COG", "GAB", "NGA", "MRT", "DZA", "KEN", "UGA", "TZA", "RWA", "BDI", "ZMB", "MWI", "BWA", "LSO", "SWZ", "GMB", "SLE", "AGO", "MOZ", "GNB", "CPV", "STP", "GNQ", "COM", "ZWE", "NAM", "DJI"], "since": {"DJI": 1977, "ZWE": 1980, "NAM": 1990, "ERI": 1993}},
+        {"name": "南アフリカ（全人種の選挙）", "color": "#e3c35a", "units": ["ZAF"], "since": {"ZAF": 1994}}
       ],
       "source": "山川出版社『詳説世界史』"
     },
     {
-      "year": 2026, "title": "54の国", "level": 3, "changeWindow": [2010, 2011],
-      "summary": "2011年に南スーダンが独立して、アフリカには54の国があります（国連加盟国）。国々はアフリカ連合（AU）をつくって協力しています。地図の色は地域のまとまりを表します。",
+      "year": 2026, "title": "54の国", "level": 3, "changeWindow": [2025, 2026],
+      "summary": "2011年に南スーダンが独立して、アフリカには54の国があります（国連加盟国）。国々はアフリカ連合（AU）をつくって協力しています。モーリシャスとセーシェルは小さな島国なので、この地図には描いていません。地図の色は国連の地域区分を表します。",
       "polities": [
         {"name": "北アフリカ", "color": "#d9a05b", "units": ["MAR", "DZA", "TUN", "LBY", "EGY", "SDN"]},
         {"name": "西アフリカ", "color": "#9cb97c", "units": ["MRT", "SEN", "GMB", "GNB", "GIN", "SLE", "LBR", "CIV", "GHA", "TGO", "BEN", "NGA", "BFA", "MLI", "NER", "CPV"]},
         {"name": "中部アフリカ", "color": "#b58fb5", "units": ["CMR", "CAF", "TCD", "COG", "COD", "GAB", "GNQ", "STP", "AGO"]},
-        {"name": "東アフリカ", "color": "#e3a3a3", "units": ["ETH", "ERI", "DJI", "SOM", "SOL", "KEN", "UGA", "TZA", "RWA", "BDI", "SSD", "MDG", "COM", "MWI", "MOZ"]},
-        {"name": "南部アフリカ", "color": "#7fa6d9", "units": ["ZMB", "ZWE", "BWA", "NAM", "ZAF", "LSO", "SWZ"]}
+        {"name": "東アフリカ", "color": "#e3a3a3", "units": ["ETH", "ERI", "DJI", "SOM", "KEN", "UGA", "TZA", "RWA", "BDI", "SSD", "MDG", "COM", "MWI", "MOZ", "ZMB", "ZWE"], "since": {"SSD": 2011}},
+        {"name": "南部アフリカ", "color": "#7fa6d9", "units": ["BWA", "LSO", "NAM", "ZAF", "SWZ"]}
       ],
       "source": "外務省『各国・地域情勢』、国際連合"
     }

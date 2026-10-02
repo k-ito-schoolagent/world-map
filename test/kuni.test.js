@@ -5,7 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { formatYear, shortYear, makeScale, keyframeAt } from "../kuni/scale.js";
-import { progress, rankThresholds, planTransition, ownersAt, ownerMap, unitWeight, areasMorphable, lerpArea, mixHex, normalizeName } from "../kuni/morph.js";
+import { progress, rankThresholds, planTransition, pinActivity, ownersAt, ownerMap, unitWeight, areasMorphable, lerpArea, mixHex, normalizeName } from "../kuni/morph.js";
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const dataDir = path.join(root, "kuni", "data");
@@ -15,7 +15,8 @@ const near = (a, b, tol, msg) => assert.ok(Math.abs(a - b) <= tol, `${msg ?? ""}
 test("formatYear: 紀元前・西暦・4けた", () => {
   assert.equal(formatYear(-3000), "紀元前3000年");
   assert.equal(formatYear(-1), "紀元前1年");
-  assert.equal(formatYear(0), "西暦0年");
+  assert.equal(formatYear(0), "紀元前1年", "西暦0年は無い");
+  assert.equal(formatYear(1), "西暦1年");
   assert.equal(formatYear(57), "西暦57年");
   assert.equal(formatYear(999), "西暦999年");
   assert.equal(formatYear(1000), "1000年");
@@ -103,6 +104,24 @@ test("planTransition: 新しい持ち主の中心に近いものから先に塗�
   assert.ok(lose.get("u3").theta < lose.get("u1").theta);
 });
 
+test("since の年（pin）: changeWindow と関係なく、その年に塗りかわる", () => {
+  const A = { year: 1950, polities: [{ name: "植民地", units: ["a", "b"] }] };
+  const B = { year: 1960, polities: [{ name: "独立国", units: ["a", "b"], since: { a: 1956 } }] };
+  const C = { a: [0, 0], b: [1, 0] };
+  const plan = planTransition(A, B, { unitCenter: (id) => C[id], distance: (p, q) => Math.abs(p[0] - q[0]) });
+  assert.equal(plan.get("a").pin, 1956);
+  assert.equal(plan.get("b").pin, null);
+  // 窓がまだ始まっていなくても（f=0）、1956 年をすぎれば a は塗りかわっている
+  assert.equal(unitWeight(plan.get("a"), 0, 1955), 0);
+  near(unitWeight(plan.get("a"), 0, 1956), 0.5, 1e-12);
+  assert.equal(unitWeight(plan.get("a"), 0, 1957), 1);
+  assert.equal(ownersAt(plan, 0, 1957).get("a"), "独立国");
+  assert.equal(ownersAt(plan, 0, 1957).get("b"), "植民地", "pin の無い b は窓にしたがう");
+  assert.deepEqual(pinActivity(plan, 1950), { active: false, done: false });
+  assert.deepEqual(pinActivity(plan, 1956), { active: true, done: false });
+  assert.deepEqual(pinActivity(plan, 1957), { active: true, done: true });
+});
+
 test("areas の形を少しずつ変える・色を混ぜる", () => {
   const d1 = { type: "disc", center: [0, 0], km: 100 };
   const d2 = { type: "disc", center: [10, 20], km: 300 };
@@ -159,6 +178,7 @@ for (const st of stages) {
     let prev = -Infinity;
     let prevKf = null;
     for (const k of stage.keyframes) {
+      const lastKf = prevKf; // since の確認用（prevKf は下で進める）
       const where = `${formatYear(k.year)}「${k.title}」`;
       assert.ok(k.year >= min && k.year <= max, `${where} が範囲内`);
       assert.ok(k.year > prev, `${where} が年の順に並んでいる`);
@@ -207,6 +227,11 @@ for (const st of stages) {
           }
         }
         if (p.label) assert.equal(p.label.length, 2);
+        for (const [u, y] of Object.entries(p.since ?? {})) {
+          assert.ok((p.units ?? []).includes(u), `${where} ${p.name}: since の ${u} が units にない`);
+          assert.ok(lastKf, `${where}: 最初の場面に since は書けない`);
+          assert.ok(Number.isFinite(y) && y > lastKf.year && y <= k.year, `${where} ${p.name}: since の ${u}=${y} が前の場面（${lastKf.year}）とこの場面（${k.year}）のあいだにない`);
+        }
       }
       for (const m of k.markers ?? []) assert.ok(m.name && m.at.length === 2, `${where} の印`);
     }

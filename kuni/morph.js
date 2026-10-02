@@ -50,6 +50,7 @@ export function polityCore(p, unitCenter) {
  * 前の地図 A から次の地図 B への塗りかえ計画。ID ごとに { from, to, theta }。
  * 同じ名前の勢力のままなら theta = null（色だけ f で混ぜる）。
  * 持ち主が変わる ID は、新しい持ち主の中心に近い順に（失うだけのときは、元の中心から遠い順に）塗りかえる。
+ * 次の持ち主の since にその ID の年があれば pin（その年に塗りかわる。changeWindow とは関係なし）。
  */
 export function planTransition(A, B, { unitCenter, distance }) {
   const oa = ownerMap(A);
@@ -62,7 +63,8 @@ export function planTransition(A, B, { unitCenter, distance }) {
     const from = oa.get(id) ?? null;
     const to = ob.get(id) ?? null;
     if (from && to && from.name === to.name) { plan.set(id, { from, to, theta: null }); continue; }
-    plan.set(id, { from, to, theta: 0.5 });
+    const pin = to?.since?.[id];
+    plan.set(id, { from, to, theta: 0.5, pin: Number.isFinite(pin) ? pin : null });
     if (to) push(gains, to, id);
     else push(losses, from, id);
   }
@@ -77,17 +79,36 @@ export function planTransition(A, B, { unitCenter, distance }) {
   return plan;
 }
 
-/** 計画の 1 つの ID が、進み具合 f のとき「次の持ち主」にどれだけ寄っているか（0〜1）。しきい値の前後 band で色を混ぜる */
-export function unitWeight(entry, f, band = 0.06) {
+export const PIN_BAND = 0.5; // pin の年の前後これだけの年で色を混ぜる
+const BAND = 0.06; // しきい値の前後これだけの f で色を混ぜる
+
+/**
+ * 計画の 1 つの ID が「次の持ち主」にどれだけ寄っているか（0〜1）。
+ * pin があれば年 t で決まり（pin の年にちょうど半分）、なければ進み具合 f としきい値で決まる。
+ */
+export function unitWeight(entry, f, t) {
   if (entry.theta === null) return f;
-  return clamp01((f - (entry.theta - band)) / (2 * band));
+  if (entry.pin != null && t != null) return smoothstep(t, entry.pin - PIN_BAND, entry.pin + PIN_BAND);
+  return clamp01((f - (entry.theta - BAND)) / (2 * BAND));
 }
 
-/** 進み具合 f での「ID → 勢力の名前（無ければ null）」 */
-export function ownersAt(plan, f) {
+/** 年 t で、pin のついた ID が動き始めているか（active）、すべて塗りかわり終えたか（done） */
+export function pinActivity(plan, t) {
+  let active = false;
+  let done = true;
+  for (const e of plan.values()) {
+    if (e.theta === null || e.pin == null) continue;
+    if (t >= e.pin - PIN_BAND) active = true;
+    if (t < e.pin + PIN_BAND) done = false;
+  }
+  return { active, done };
+}
+
+/** 進み具合 f（と年 t）での「ID → 勢力の名前（無ければ null）」 */
+export function ownersAt(plan, f, t) {
   const m = new Map();
   for (const [id, e] of plan) {
-    const owner = unitWeight(e, f) >= 0.5 ? e.to : e.from;
+    const owner = unitWeight(e, f, t) >= 0.5 ? e.to : e.from;
     m.set(id, owner ? owner.name : null);
   }
   return m;

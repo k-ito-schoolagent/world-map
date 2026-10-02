@@ -1,8 +1,9 @@
 // 国の成り立ち — 年代の目盛りと表記（DOM に触らない純粋な関数。test/kuni.test.js で検証）
 
-/** 西暦の表記。負の年は紀元前。 */
+/** 西暦の表記。負の年は紀元前。西暦 0 年は無いので、0 は紀元前1年として出す。 */
 export function formatYear(y) {
   const n = Math.round(y);
+  if (n === 0) return "紀元前1年";
   if (n < 0) return `紀元前${-n}年`;
   if (n < 1000) return `西暦${n}年`;
   return `${n}年`;

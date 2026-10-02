@@ -1,6 +1,6 @@
 // 国の成り立ち（試作） — 画面の組み立て。年代の計算は scale.js、年表は ../lib/timeline.js。
 import { formatYear, shortYear, makeScale, keyframeAt } from "./scale.js";
-import { progress, smoothstep, planTransition, unitWeight, areasMorphable, lerpArea, lerpPoint, mixHex } from "./morph.js";
+import { progress, smoothstep, planTransition, pinActivity, unitWeight, areasMorphable, lerpArea, lerpPoint, mixHex } from "./morph.js";
 import { createTimeline } from "../lib/timeline.js";
 
 const $ = (s) => document.querySelector(s);
@@ -301,7 +301,7 @@ function transitionPlan(A, B) {
 const onlyA = (f) => 1 - smoothstep(f, 0.35, 0.9);
 const onlyB = (f) => smoothstep(f, 0.1, 0.65);
 
-function drawTransition({ A, B, f }, borders) {
+function drawTransition({ A, B, f, t }, borders) {
   const st = state.stage;
   const plan = transitionPlan(A, B);
   const shown = f >= 0.5 ? B : A;
@@ -321,7 +321,7 @@ function drawTransition({ A, B, f }, borders) {
       color = mixHex(landColor(e.from.color), landColor(e.to.color), f);
       owner = e.to;
     } else {
-      const w = unitWeight(e, f);
+      const w = unitWeight(e, f, t);
       color = mixHex(e.from ? landColor(e.from.color) : base, e.to ? landColor(e.to.color) : base, w);
       owner = w >= 0.5 ? e.to : e.from;
     }
@@ -456,11 +456,13 @@ function frameAt(y) {
   const ks = state.stage.keyframes;
   const A = keyframeAt(ks, y);
   const B = ks[ks.indexOf(A) + 1];
-  if (!state.opts.smooth || !B || y < A.year) return { A, B: null, f: 0 };
+  if (!state.opts.smooth || !B || y < A.year) return { A, B: null, f: 0, t: y };
   const f = progress(y, A.year, B.year, B.changeWindow);
-  if (f <= 0) return { A, B: null, f: 0 };
-  if (f >= 1) return { A: B, B: null, f: 0 }; // changeWindow が終わったら、次の地図そのもの
-  return { A, B, f };
+  // since で年が決まっている ID は、changeWindow の外でもその年に塗りかわる
+  const pins = pinActivity(transitionPlan(A, B), y);
+  if (f <= 0 && !pins.active) return { A, B: null, f: 0, t: y };
+  if (f >= 1 && pins.done) return { A: B, B: null, f: 0, t: y }; // 変化が終わったら、次の地図そのもの
+  return { A, B, f, t: y };
 }
 
 function setYear(y, { fromTimeline = false } = {}) {
@@ -496,13 +498,11 @@ function updateYearText() {
   $("#map-year").textContent = fr.B
     ? `${formatYear(fr.A.year)} の地図 → ${formatYear(fr.B.year)} の地図へ変化中（なめらかに描いています）`
     : `この地図は ${formatYear(fr.A.year)} ごろ`;
-  const ks = state.stage.keyframes;
-  const i = ks.indexOf(currentKf);
-  const from = currentKf.year;
-  const to = i + 1 < ks.length ? ks[i + 1].year : Infinity;
+  // つまみの年に近いできごと（範囲の 2%、少なくとも 3 年）を強調する
+  const [min, max] = state.stage.range;
+  const win = Math.max(3, (max - min) * 0.02);
   for (const li of $("#events").children) {
-    const y = Number(li.dataset.year);
-    li.classList.toggle("now", y >= from && y < to);
+    li.classList.toggle("now", Math.abs(Number(li.dataset.year) - state.year) <= win);
   }
 }
 
@@ -615,7 +615,7 @@ function buildStageButtons() {
     b.textContent = s.name;
     b.dataset.id = s.id;
     b.setAttribute("aria-pressed", "false");
-    b.addEventListener("click", () => setStage(s.id));
+    b.addEventListener("click", () => { if (state.stage?.id !== s.id) setStage(s.id); }); // 選んでいる地域をもう一度押しても何もしない
     box.append(b);
   }
 }
@@ -699,6 +699,13 @@ function setupPointer() {
   const up = (ev) => {
     pointers.delete(ev.pointerId);
     if (!drag) return;
+    if (pointers.size === 1) {
+      // ピンチのあと 1 本の指が残ったら、その指の位置から動かしはじめる（はねないように）
+      const [x, y] = [...pointers.values()][0];
+      drag.x = x;
+      drag.y = y;
+      drag.pinch = null;
+    }
     if (drag.moved < 4 && pointers.size === 0) pick(ev);
     if (pointers.size === 0) {
       drag = null;
@@ -733,8 +740,12 @@ function pick(ev) {
   select(hit === state.selected ? null : hit);
 }
 
+// 再生中は年のバッジを読み上げない（読み上げが追いつかないため）。止めたら戻す
+const badge = () => document.querySelector(".age-badge");
+
 function stopPlay() {
   state.playing = false;
+  badge().setAttribute("aria-live", "polite");
   const playBtn = $("#play");
   playBtn.textContent = "▶ 再生";
   playBtn.setAttribute("aria-pressed", "false");
@@ -744,6 +755,7 @@ function startPlay() {
   if (!state.stage) return;
   if (state.year >= state.stage.range[1]) setYear(state.stage.range[0]);
   state.playing = true;
+  badge().removeAttribute("aria-live");
   const playBtn = $("#play");
   playBtn.textContent = "❚❚ 停止";
   playBtn.setAttribute("aria-pressed", "true");
@@ -796,8 +808,9 @@ function setupControls() {
   window.addEventListener("keydown", (ev) => {
     const t = ev.target;
     if (!state.stage) return;
-    if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.tagName === "BUTTON" || t.closest?.("#timeline"))) return;
-    if (ev.key === " ") { ev.preventDefault(); state.playing ? stopPlay() : startPlay(); }
+    if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.closest?.("#timeline"))) return;
+    // ボタンを押したあとも ← → で年を動かせる。Space はボタンを押す操作なので、ボタンにいるときは使わない
+    if (ev.key === " " && t?.tagName !== "BUTTON") { ev.preventDefault(); state.playing ? stopPlay() : startPlay(); }
     else if (ev.key === "ArrowLeft") { ev.preventDefault(); setYear(Math.round(state.year) - (ev.shiftKey ? 100 : 10)); }
     else if (ev.key === "ArrowRight") { ev.preventDefault(); setYear(Math.round(state.year) + (ev.shiftKey ? 100 : 10)); }
   });
@@ -831,6 +844,7 @@ function toast(msg) {
 function buildUrl() {
   const u = new URL(location.href);
   u.search = "";
+  u.hash = "";
   if (state.stage) {
     u.searchParams.set("stage", state.stage.id);
     u.searchParams.set("year", String(Math.round(state.year)));
