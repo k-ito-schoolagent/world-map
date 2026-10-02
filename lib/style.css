@@ -19,7 +19,7 @@ ruby rt{font-size:.55em;color:var(--muted);font-weight:400;letter-spacing:0}
 header{height:84px;padding:0 4%;display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:baseline;gap:14px;color:inherit;text-decoration:none;white-space:nowrap}
 .brand-name{font-family:var(--serif);font-size:26px;font-weight:700;letter-spacing:.04em}
-.brand-sub{font-family:var(--mono);font-size:9px;letter-spacing:.2em;line-height:1.5;color:var(--muted)}
+.brand-sub{font-family:var(--mono);font-size:10px;letter-spacing:.2em;line-height:1.5;color:var(--muted)}
 nav{display:flex;gap:4px;align-items:center;flex:1;justify-content:flex-end;overflow-x:auto;scrollbar-width:none}
 nav::-webkit-scrollbar{display:none}
 nav a{color:var(--muted);text-decoration:none;padding:12px 14px;font-size:14px;border-radius:var(--radius);min-height:44px;display:inline-flex;align-items:center;white-space:nowrap;transition:background .15s,color .15s}
@@ -51,7 +51,7 @@ main{max-width:1600px;margin:auto;padding:0 4%}
 .age-badge .period b{font-weight:600}
 .age-badge .era{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color:var(--muted);margin-left:8px}
 .legend{bottom:12px;left:12px;display:flex;gap:4px 14px;flex-wrap:wrap;font-size:12px;pointer-events:auto;max-width:70%;padding:4px 10px;border-radius:4px;background:color-mix(in srgb,var(--paper) 72%,transparent)}
-.legend button{min-height:28px;padding:0 4px 0 0;border:0;background:transparent;font-size:12px;display:inline-flex;align-items:center;gap:6px;color:var(--ink)}
+.legend button{min-height:32px;padding:0 4px 0 0;border:0;background:transparent;font-size:12px;display:inline-flex;align-items:center;gap:6px;color:var(--ink)}
 .legend button:hover{background:transparent;text-decoration:underline}
 .legend button[aria-pressed=true]{font-weight:700}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:2px;background:var(--c);border:1px solid rgba(0,0,0,.15)}
@@ -76,13 +76,13 @@ main{max-width:1600px;margin:auto;padding:0 4%}
 .tl-controls .kbd{font-family:var(--mono);font-size:10px;color:var(--muted);letter-spacing:.06em}
 #timeline{width:100%;height:96px;display:block;touch-action:none;cursor:pointer}
 #timeline text{font-family:var(--sans);pointer-events:none}
-#timeline .era-label{font-family:var(--mono);font-size:9px;letter-spacing:.14em;fill:var(--muted)}
+#timeline .era-label{font-family:var(--mono);font-size:10px;letter-spacing:.14em;fill:var(--muted)}
 #timeline .period-label{font-size:11px;fill:#1f1b18}
 #timeline .period{stroke:var(--paper);stroke-width:1}
 #timeline .ev{fill:var(--ink);opacity:.55}
 #timeline .ev.near{opacity:1;fill:var(--accent)}
 #timeline .ev-label{font-size:10px;fill:var(--muted)}
-#timeline .tick{font-family:var(--mono);font-size:9px;fill:var(--muted);letter-spacing:.06em}
+#timeline .tick{font-family:var(--mono);font-size:10px;fill:var(--muted);letter-spacing:.06em}
 #timeline .handle-line{stroke:var(--ink);stroke-width:2}
 #timeline .handle-knob{fill:var(--paper);stroke:var(--ink);stroke-width:2}
 #timeline .handle:focus,#timeline .handle:focus-visible{outline:none}
@@ -100,7 +100,7 @@ aside h2 small{font-family:var(--mono);font-size:10px;letter-spacing:.14em;color
 .events li{display:grid;grid-template-columns:76px 1fr;gap:10px;padding:7px 0;font-size:13px;line-height:1.7;border-bottom:1px dashed var(--line)}
 .events li:last-child{border-bottom:0}
 .events .when{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.02em;padding-top:3px}
-.events button{border:0;padding:0;min-height:0;text-align:left;background:transparent;font-size:13px;line-height:1.7;color:inherit;display:block}
+.events button{border:0;padding:4px 0;min-height:32px;text-align:left;background:transparent;font-size:13px;line-height:1.7;color:inherit;display:block}
 .events button:hover{background:transparent;text-decoration:underline}
 .events li.now .when,.events li.now button{color:var(--accent);font-weight:600}
 .events .text{display:block;color:var(--muted);font-size:12px;margin-top:2px;font-weight:400}
@@ -131,5 +131,5 @@ footer a{color:inherit}
 
 @media(min-width:1001px){.workspace{height:clamp(640px,calc(100svh - 150px),920px)}.viewport{min-height:0}.workspace aside{overflow-y:auto;scrollbar-width:thin}}
 @media(max-width:1000px){.workspace{grid-template-columns:1fr}aside{border-left:0;border-top:1px solid var(--line)}.viewport{min-height:480px}.intro{display:block}.age-badge .age{font-size:26px}}
-@media(max-width:760px){.intro h1 br{display:none}header{height:auto;min-height:72px;padding:10px 4%;display:grid;grid-template-columns:1fr auto;gap:6px 10px}.brand{grid-column:1}.brand-name{font-size:22px}.theme-toggle{grid-column:2;grid-row:1}nav{grid-column:1/-1;justify-content:flex-start}nav a{font-size:12px;padding:8px 10px}.intro{padding:20px 0 16px}.viewport{min-height:62svh}.regions{top:10px;left:10px}.regions button{min-height:34px;padding:0 9px;font-size:12px}.age-badge{top:10px;right:12px}.age-badge .age{font-size:22px}.age-badge .period{font-size:11px}.regions{max-width:calc(100% - 150px)}.globe-tools{top:92px}.legend{bottom:10px;left:10px;gap:8px;font-size:11px;max-width:100%}.legend button{font-size:11px;min-height:24px}.note{display:none}.globe-tools{right:10px;bottom:auto;top:52px}.view-hint{display:none}.timeline{padding:10px 10px 12px}#timeline{height:88px}.tl-controls .kbd{display:none}aside{padding:20px 16px 24px}.doc{padding-top:36px}footer{flex-direction:column;gap:8px}}
+@media(max-width:760px){.intro h1 br{display:none}header{height:auto;min-height:72px;padding:10px 4%;display:grid;grid-template-columns:1fr auto;gap:6px 10px}.brand{grid-column:1}.brand-name{font-size:22px}.theme-toggle{grid-column:2;grid-row:1}nav{grid-column:1/-1;justify-content:flex-start}nav a{font-size:12px;padding:8px 10px}.intro{padding:20px 0 16px}.viewport{min-height:62svh}.regions{top:10px;left:10px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;max-width:calc(100% - 150px)}.regions::-webkit-scrollbar{display:none}.regions button{flex:none}.regions button{min-height:34px;padding:0 9px;font-size:12px}.age-badge{top:10px;right:12px}.age-badge .age{font-size:22px}.age-badge .period{font-size:11px}.regions{max-width:calc(100% - 150px)}.globe-tools{top:92px}.legend{bottom:10px;left:10px;gap:8px;font-size:11px;max-width:100%}.legend button{font-size:11px;min-height:24px}.note{display:none}.globe-tools{right:10px;bottom:auto}.view-hint{display:none}.timeline{padding:10px 10px 12px}#timeline{height:88px}.tl-controls .kbd{display:none}aside{padding:20px 16px 24px}.doc{padding-top:36px}footer{flex-direction:column;gap:8px}}
 @media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

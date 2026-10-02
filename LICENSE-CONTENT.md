@@ -3,7 +3,7 @@
 | 何が | どのファイル | ライセンス |
 |---|---|---|
 | プログラム | `lib/` の自作の `.js`（d3 を除く）、`_data/` の `.py`、`index.html`、`test/` | [MIT License](LICENSE) |
-| 解説文 | `index.html` の文章、`README.md` などのドキュメント、`data/events.json` の `summary`・`text`、`kuni/data/*.json` の `title`・`summary`・名前 | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.ja)（表示・継承） |
+| 解説文 | `index.html` の文章、`README.md` などのドキュメント、`data/events.json`・`data/regions.json`・`data/continents.json` の `summary`・`text`、`kuni/data/*.json` の `title`・`summary`・名前 | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/deed.ja)（表示・継承） |
 | データ | `data/pieces.json`、`data/rotations.json`、`data/rotations.bin` | EarthByte Group の [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/deed.ja) のデータを加工したもの（出典の表示が必要） |
 | 外部ライブラリ | d3 v7（`lib/d3.v7.min.js`） | ISC License |
 

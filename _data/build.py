@@ -330,6 +330,10 @@ def main():
         s_ring = simplify(ring, TOL_JAPAN if jp else TOL_DEG)
         # ちょうど ±180° や ±90° の頂点は、回転していない地図で d3 の切り抜きが裏返るので少し内側へ
         s_ring = [[max(-179.99, min(179.99, x)), max(-89.99, min(89.99, y))] for x, y in s_ring]
+        # ハワイ諸島（太平洋プレート 901）は火山島で、主な島はおよそ 500 万年より新しい。
+        # 海岸線ファイルの有効期間（83 Ma）は長すぎるので、600 万年より昔は描かない
+        if pid == 901:
+            begin = min(begin, 6.0)
         pieces.append(
             {
                 "pid": pid,
@@ -349,7 +353,9 @@ def main():
     # 307 個以上の相異なる整数（すべて 2048 未満）を渡すと内部の表が 2048 枠になり
     # 応答は年代の昇順になる。そこで埋め草の年代を足して昇順で受け取り、単発の
     # 問い合わせで要所を照合する。
-    fillers = [t for t in range(51, 80, 2) if t not in times]
+    # （CPython の set は 307 個目の挿入で 2048 枠に広がり、2048 未満の相異なる整数は昇順に並ぶ。
+    #   念のため下の単発照合と verify.py でも確かめる）
+    fillers = [t for t in range(0, 1000) if t not in set(times)]
     req_times = sorted(set(times) | set(fillers[: max(0, 310 - len(times))]))
     if len(req_times) < 307:
         raise SystemExit("要求する年代は 307 個以上にする（応答の並びを昇順にするため）")
