@@ -486,18 +486,13 @@ function setYear(y, { fromTimeline = false } = {}) {
   scheduleUrl();
 }
 
-const LEVEL_TEXT = {
-  3: "<b>LEVEL 3</b>資料がよく一致しています。",
-  2: "<b>LEVEL 2</b>おおまかには一致していますが、境は大ざっぱです。",
-  1: "<b>LEVEL 1</b>場所も範囲も推定です。ひとつの考え方として見てください。",
-};
 
 function updateYearText() {
   const fr = state.frame;
   $("#age-label").textContent = formatYear(state.year);
   $("#map-year").textContent = fr.B
-    ? `${formatYear(fr.A.year)} の地図 → ${formatYear(fr.B.year)} の地図へ変化中（なめらかに描いています）`
-    : `この地図は ${formatYear(fr.A.year)} ごろ`;
+    ? `${formatYear(fr.A.year)} → ${formatYear(fr.B.year)} へ変化中`
+    : "";
   // つまみの年に近いできごと（範囲の 2%、少なくとも 3 年）を強調する
   const [min, max] = state.stage.range;
   const win = Math.max(3, (max - min) * 0.02);
@@ -518,10 +513,6 @@ function updateKeyframeText() {
   small.textContent = formatYear(kf.year);
   h2.append(small);
   $("#period-summary").textContent = kf.summary;
-  const c = $("#certainty");
-  c.dataset.level = kf.level;
-  c.innerHTML = LEVEL_TEXT[kf.level] ?? "";
-  $("#source").textContent = kf.source ?? "";
 }
 
 function buildEvents() {
@@ -655,7 +646,6 @@ async function setStage(id, year) {
   state.legendOpen = false;
   currentKf = null;
   fade = null;
-  $("#region-note").textContent = st._きまり ?? "";
   buildEvents();
   makeTimeline();
   const y = Number.isFinite(year) ? year : st.range[1];

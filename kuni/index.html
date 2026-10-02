@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>国の成り立ち（試作） — うごく世界地図</title>
+<title>国の成り立ち — うごく世界地図</title>
 <meta name="description" content="国や統治のかたちが、人の歴史の中でどう変わってきたかを、スライダーで見る日本語教材の試作版。アフリカ大陸と日本列島をたどれます。">
 <meta property="og:title" content="国の成り立ち（試作） — うごく世界地図">
 <meta property="og:description" content="年表のつまみを動かすと、その時代の国や統治のようすが地図に出る教材の試作版。だれでも年代を足せます。">
@@ -19,12 +19,12 @@
 <header>
   <a class="brand" href="../">
     <span class="brand-name">うごく世界地図</span>
-    <span class="brand-sub">HOW NATIONS FORMED<br>国の成り立ち（試作）</span>
   </a>
-  <nav aria-label="ページ内">
-    <a href="../">大陸移動</a>
-    <a href="#howto">使い方</a>
-    <a href="#about">しくみ</a>
+  <div class="switch-tabs" role="navigation" aria-label="教材の切り替え">
+    <a href="../"><b>大陸の動き</b><span>地球の10億年</span></a>
+    <a href="./" aria-current="page"><b>国の成り立ち</b><span>人の5000年・試作</span></a>
+  </div>
+  <nav aria-label="外部リンク">
     <a href="https://github.com/k-ito-schoolagent/world-map" rel="noopener">GitHub</a>
   </nav>
   <button class="theme-toggle" id="theme-toggle" aria-label="ダークモードに切り替え" aria-pressed="false">
@@ -34,13 +34,8 @@
 </header>
 
 <main>
-  <section class="intro">
-    <div>
-      <div class="eyebrow">How nations formed — trial version</div>
-      <h1>国のかたちは、<br>どう変わってきたか。</h1>
-      <p>つまみを動かすと、その時代に、だれがどこを治めていたかが地図に出ます。これは試作版で、いまは「アフリカ大陸」（古代エジプトから54の国まで）と「日本列島」（縄文のむらから47都道府県まで）の2つを見られます。昔の国の境は、今の国境や都道府県の形を借りて大まかに描いています。</p>
-    </div>
-  </section>
+  <h1 class="sr-only">うごく世界地図 — 国の成り立ち（試作）</h1>
+  <p class="lede">つまみを動かすと、その年に<b>だれがどこを治めていたか</b>が塗りかわります。まずは日本列島の1570年と1871年をくらべてみよう。</p>
 
   <div class="workspace">
     <div class="stage">
@@ -81,61 +76,42 @@
       <div class="section-label">この地図の年</div>
       <h2 id="period-name">—</h2>
       <p class="summary" id="period-summary"></p>
-      <p class="region-note" id="region-note"></p>
       <div class="divider"></div>
       <div class="section-label">この地図の勢力</div>
       <ul class="polity-list" id="polity-list" aria-label="この地図の国や勢力。押すとその勢力だけが濃くなります"></ul>
       <div class="divider"></div>
-      <div class="section-label">確かさ</div>
-      <p class="certainty" id="certainty"></p>
-      <div class="section-label source-label">出典</div>
-      <p class="source" id="source"></p>
-      <div class="divider"></div>
       <div class="section-label">できごと</div>
       <ul class="events" id="events"></ul>
-      <div class="divider"></div>
-      <div class="section-label">表示</div>
-      <label class="switch-row">緯線・経線<input type="checkbox" id="opt-grid" checked></label>
-      <label class="switch-row">名前<input type="checkbox" id="opt-labels" checked></label>
-      <label class="switch-row">変化をなめらかに描く<input type="checkbox" id="opt-smooth" checked></label>
-      <div class="share">
-        <button type="button" id="copy-link">この場面のリンクをコピー</button>
-      </div>
+      <details class="settings">
+        <summary>表示の設定</summary>
+        <label class="switch-row">変化をなめらかに描く<input type="checkbox" id="opt-smooth" checked></label>
+        <label class="switch-row">名前<input type="checkbox" id="opt-labels" checked></label>
+        <label class="switch-row">緯線・経線<input type="checkbox" id="opt-grid" checked></label>
+        <button type="button" class="copy" id="copy-link">この場面のリンクをコピー</button>
+      </details>
     </aside>
   </div>
 
-  <section class="doc" id="howto">
-    <h2>使い方</h2>
-    <ul>
-      <li><b>つまみを動かす</b>：年表の上のつまみをドラッグします。左が昔、右が今です。キーボードの ← → でも動きます（10年ずつ、Shift で 100年ずつ）。</li>
-      <li><b>地図は「その年ごろ」の1枚</b>：地図は何枚かの「場面」でできていて、場面と場面のあいだは少しずつ塗りかわります。右上の「この地図は ○○年 ごろ」や「○○年 の地図 → ○○年 の地図へ変化中」で、どの年の地図かを確かめてください。</li>
-      <li><b>▶ 再生</b>：昔から今に向かって自動で進みます。</li>
-      <li><b>色をクリック</b>：地図の上の色か、右の欄の「この地図の勢力」（勢力が多い場面では地図の左下の「勢力の一覧」）を押すと、その国や勢力だけが濃くなります。もう一度押すと戻ります。</li>
-      <li><b>リンクをコピー</b>：いま見ている地域と年をそのまま開けるリンクです（例: <code>?stage=japan&amp;year=1570</code>）。</li>
-    </ul>
-    <h3>授業でのつかいかた</h3>
-    <p>まず今の地図を見せてから、「1000年前、この場所はだれが治めていたと思う？」と予想してもらい、それから動かすのがおすすめです。アフリカでは、1880年と1914年の地図を見くらべると、短いあいだに大陸が分けられたことが分かります。日本では、戦国時代の地図と廃藩置県の地図を見くらべてみてください。</p>
+  <section class="teach" id="join">
+    <h2>地理・歴史の先生へ — GitHub の練習台にどうぞ</h2>
+    <p>この地図の年表や場面は、ブラウザだけで書き足せます。まちがえても壊れません。メンテナーが確認してから取り込みます。</p>
+    <ol>
+      <li><a href="https://github.com/k-ito-schoolagent/world-map/issues/new?template=4-practice.yml" rel="noopener">issue を書いてみる</a><span>自己紹介や「この出来事も入れたい」をひとこと。5分</span></li>
+      <li><a href="https://github.com/k-ito-schoolagent/world-map/edit/main/CONTRIBUTORS.md" rel="noopener">名前を1行足して、プルリクエストを送る</a><span>はじめての PR。鉛筆マークで編集して送るだけ。10分</span></li>
+      <li><a href="https://github.com/k-ito-schoolagent/world-map/edit/main/kuni/data/japan.json" rel="noopener">日本の地図に「場面」を1つ足す</a><span>kuni/data/japan.json に、その年の勢力と都道府県を書く。アフリカも同じ形</span></li>
+    </ol>
+    <p class="teach-more"><a href="https://github.com/k-ito-schoolagent/world-map/blob/main/CONTRIBUTING.md" rel="noopener">くわしい手順（参加のしかた）</a></p>
   </section>
 
-  <section class="doc" id="about">
-    <h2>しくみ</h2>
-    <p>年表は、いくつかの「場面」（その年ごろの地図 1 枚）でできています。場面ごとに、そのころの国や勢力の名前と、治めていたおおよその範囲を書いてあります。</p>
-    <table>
-      <tr><th>土台の地図</th><td>今の国境（アフリカ）と今の都道府県（日本）。Natural Earth（パブリックドメイン）の実効支配線を使っています。</td></tr>
-      <tr><th>昔の国の範囲</th><td>今の国や都道府県で近いものがあれば、その形を借りて塗っています。合わないものは、円や多角形で「おおよその範囲」を描いています。</td></tr>
-      <tr><th>年表の文と出典</th><td>山川出版社『詳説世界史』『詳説日本史』、東京書籍『新しい社会 歴史』などをもとに、小学生にも読める言葉で書いています。場面ごとの出典は画面の「出典」にあります。</td></tr>
-    </table>
-    <h3>ただし書き（効果を言い過ぎないために）</h3>
+  <details class="doc" id="about">
+    <summary>この地図のしくみと、ただし書き</summary>
     <ul>
-      <li>場面ごとに「確かさ」を3段階で示しています。<b>LEVEL 3</b> は資料がよく一致、<b>LEVEL 2</b> はおおまかに一致（境は大ざっぱ）、<b>LEVEL 1</b> は場所も範囲も推定です。</li>
-      <li>昔の国の境は、<b>今の国境や都道府県の形で代用</b>しています。本当の境はもっと入り組んでいたり、はっきりした線がなかったりします。円や多角形の範囲も、おおよそです。</li>
-      <li>今の国境の線は Natural Earth の実効支配線で、今の地図（いちばん右の場面）では<b>西サハラは係争地として色を塗っていません</b>。ソマリランドは国連加盟国の範囲（ソマリア）に含めて、境の線も描いていません。モーリシャスとセーシェルは小さな島国なので描いていません。日本の<b>北方領土</b>（ロシアが実効支配し、日本が領有権を主張）は、この試作では描いていません。</li>
-      <li>年代はおおよその値です。場面の地図は「その年ごろ」のようすで、つまみの年ちょうどの境ではありません。</li>
-      <li>2枚の地図のあいだでは、<b>はっきり分かる年（独立した年など）はその年に塗りかわり</b>、それ以外は2枚の地図のあいだで<b>徐々に塗りかえて</b>います。徐々に塗りかえている部分は見やすくするための演出で、その年に本当にその境だったわけではありません。正確な年は、年表のできごとの印で確かめてください。「表示」の「変化をなめらかに描く」を切ると、場面ごとに切りかわります。</li>
+      <li>昔の国の範囲は、<b>今の国境や都道府県の形を借りて</b>塗っています。本当の境はもっと入り組んでいます。円の範囲は「だいたいこのあたり」です。</li>
+      <li>独立した年など<b>はっきり分かる年はその年に</b>塗りかわり、それ以外は2枚の地図のあいだで徐々に塗りかえています（演出）。正確な年は年表の印で。</li>
+      <li>今の地図は Natural Earth の実効支配線です。西サハラは係争地として塗らず、ソマリランドはソマリアに含め、北方領土・モーリシャス・セーシェルは描いていません。</li>
     </ul>
-    <h3>参加する</h3>
-    <p>場面（年代）は <code>kuni/data/africa.json</code> と <code>kuni/data/japan.json</code> に書いてあり、ブラウザだけで書き足せます。新しい地域を足すこともできます。やり方は <a href="https://github.com/k-ito-schoolagent/world-map/blob/main/CONTRIBUTING.md#国の成り立ちに地図年代を足す" rel="noopener">CONTRIBUTING.md の「国の成り立ちに地図（年代）を足す」</a> を読んでください。</p>
-  </section>
+    <p class="doc-more"><a href="https://github.com/k-ito-schoolagent/world-map#国の成り立ち" rel="noopener">くわしい説明（README）</a></p>
+  </details>
 </main>
 
 <footer>

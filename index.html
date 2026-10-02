@@ -18,12 +18,12 @@
 <header>
   <a class="brand" href="./">
     <span class="brand-name">うごく世界地図</span>
-    <span class="brand-sub">MOVING CONTINENTS<br>10億年の大陸移動</span>
   </a>
-  <nav aria-label="ページ内">
-    <a href="#howto">使い方</a>
-    <a href="#about">しくみ</a>
-    <a href="kuni/">国の成り立ち（試作）</a>
+  <div class="switch-tabs" role="navigation" aria-label="教材の切り替え">
+    <a href="./" aria-current="page"><b>大陸の動き</b><span>地球の10億年</span></a>
+    <a href="kuni/"><b>国の成り立ち</b><span>人の5000年・試作</span></a>
+  </div>
+  <nav aria-label="外部リンク">
     <a href="https://github.com/k-ito-schoolagent/world-map" rel="noopener">GitHub</a>
   </nav>
   <button class="theme-toggle" id="theme-toggle" aria-label="ダークモードに切り替え" aria-pressed="false">
@@ -33,13 +33,8 @@
 </header>
 
 <main>
-  <section class="intro">
-    <div>
-      <div class="eyebrow">Plate tectonics for classrooms</div>
-      <h1>大陸は、いまも動いている。<br>10億年をスライダーでさかのぼる。</h1>
-      <p>つまみを左へ動かすと、大陸が集まってひとつの超大陸になります。「日本」を選ぶと、日本列島が大陸からはなれてくる様子を追いかけられます。地球科学の研究者が公開しているプレート運動モデル（EarthByte / GPlates）のデータで動いています。</p>
-    </div>
-  </section>
+  <h1 class="sr-only">うごく世界地図 — 10億年の大陸の動き</h1>
+  <p class="lede">つまみを左へ動かすと、大陸がひとつに集まっていきます。<b>2億年前、日本はどこにあった？</b></p>
 
   <div class="workspace">
     <div class="stage">
@@ -83,56 +78,37 @@
       <div class="divider"></div>
       <div class="section-label">できごと</div>
       <ul class="events" id="events"></ul>
-      <div class="divider"></div>
-      <div class="section-label">表示</div>
-      <label class="switch-row">今の海岸線を重ねる<input type="checkbox" id="opt-today"></label>
-      <label class="switch-row">大陸の名前<input type="checkbox" id="opt-labels" checked></label>
-      <label class="switch-row">緯線・経線<input type="checkbox" id="opt-grid" checked></label>
-      <label class="switch-row">まだ無い陸地も薄く描く<input type="checkbox" id="opt-ghost" checked></label>
-      <div class="divider"></div>
-      <div class="section-label">確かさ</div>
-      <p class="certainty" id="certainty"></p>
-      <div class="share">
-        <button type="button" id="copy-link">この場面のリンクをコピー</button>
-      </div>
+      <details class="settings">
+        <summary>表示の設定</summary>
+        <label class="switch-row">今の海岸線を重ねる<input type="checkbox" id="opt-today"></label>
+        <label class="switch-row">大陸の名前<input type="checkbox" id="opt-labels" checked></label>
+        <label class="switch-row">緯線・経線<input type="checkbox" id="opt-grid" checked></label>
+        <label class="switch-row">まだ無い陸地も薄く描く<input type="checkbox" id="opt-ghost" checked></label>
+        <button type="button" class="copy" id="copy-link">この場面のリンクをコピー</button>
+      </details>
     </aside>
   </div>
 
-  <section class="doc" id="howto">
-    <h2>使い方</h2>
-    <ul>
-      <li><b>つまみを動かす</b>：年表の上のつまみをドラッグします。左が昔、右が今。キーボードの ← → でも動きます（Shift で 1000 万年ずつ）。</li>
-      <li><b>▶ 再生</b>：10 億年前から今に向かって自動で進みます。「ゆっくり」にすると、1 秒で 500 万年です。</li>
-      <li><b>見る場所</b>：「世界地図」は全体を、「地球儀」はドラッグで回せます。「日本」「インド」「オーストラリア」はその陸地を追いかけて、画面の真ん中に置きつづけます。</li>
-      <li><b>大陸をクリック</b>：その大陸だけが濃くなります。もう一度押すと戻ります。</li>
-      <li><b>今の海岸線を重ねる</b>：今の地図を薄い線で重ねて、どれだけ動いたかを比べられます。</li>
-      <li><b>リンクをコピー</b>：いま見ている年代と場所をそのまま開けるリンクです。授業の前に用意しておくと便利です。</li>
-    </ul>
-    <h3>授業でのつかいかた</h3>
-    <p>プロジェクターに映して、まず今の地図を見せてから「2 億年前はどうなっていたと思う？」と予想してもらい、それから動かすのがおすすめです。「大西洋」を選ぶと、南アメリカとアフリカの海岸線がぴったり合うことを確かめられます。「日本」では、およそ 2000 万年前に日本海が開いて日本列島が大陸からはなれる様子が見えます。</p>
+  <section class="teach" id="join">
+    <h2>地理・歴史の先生へ — GitHub の練習台にどうぞ</h2>
+    <p>この地図の年表や場面は、ブラウザだけで書き足せます。まちがえても壊れません。メンテナーが確認してから取り込みます。</p>
+    <ol>
+      <li><a href="https://github.com/k-ito-schoolagent/world-map/issues/new?template=4-practice.yml" rel="noopener">issue を書いてみる</a><span>自己紹介や「この出来事も入れたい」をひとこと。5分</span></li>
+      <li><a href="https://github.com/k-ito-schoolagent/world-map/edit/main/CONTRIBUTORS.md" rel="noopener">名前を1行足して、プルリクエストを送る</a><span>はじめての PR。鉛筆マークで編集して送るだけ。10分</span></li>
+      <li><a href="https://github.com/k-ito-schoolagent/world-map/edit/main/data/events.json" rel="noopener">年表にできごとを1つ足す</a><span>data/events.json に1行。「この単元で使いたい出来事」をどうぞ</span></li>
+    </ol>
+    <p class="teach-more"><a href="https://github.com/k-ito-schoolagent/world-map/blob/main/CONTRIBUTING.md" rel="noopener">くわしい手順（参加のしかた）</a></p>
   </section>
 
-  <section class="doc" id="about">
-    <h2>しくみ</h2>
-    <p>地球の表面はいくつかのプレート（かたい板）に分かれていて、それぞれが年に数 cm ずつ動いています。この教材は、研究者がまとめた「どのプレートが、いつ、どれだけ回ったか」の表（プレート運動モデル）を使って、今の海岸線をそのまま昔の位置へ回して描いています。</p>
-    <table>
-      <tr><th>プレート運動モデル</th><td>Müller et al. (2022) — Merdith et al. (2021) の相対運動にマントル基準系を合わせたもの。0〜10 億年前。</td></tr>
-      <tr><th>海岸線と回転の取得</th><td>EarthByte グループが公開するデータと <a href="https://gws.gplates.org/" rel="noopener">GPlates Web Service</a>（CC BY 4.0）</td></tr>
-      <tr><th>表示している陸地</th><td>およそ 1 万 km² 以上の陸地（日本のまわりは 400 km² 以上）。小さな島は省いています。</td></tr>
-      <tr><th>計算</th><td>プレートごとの回転（四元数）を 1〜5 百万年ごとに記録し、そのあいだは球面線形補間。ブラウザの中だけで計算しています。</td></tr>
-      <tr><th>日本海の開き</th><td>GPlates の全球モデルには、約 2000 万〜1500 万年前に日本海が急に開いた動きが入っていません（日本列島は大陸と一緒に動きます）。そこで Otofuji ほか (1985) の「観音開き」モデルを単純化して重ねています: 西南日本は北部九州付近を軸に時計回り、東北日本は北海道北部付近を軸に反時計回りに約 45° 回転。これは研究の図を手で単純化した概略で、確かさは LEVEL 2 です。</td></tr>
-    </table>
-    <h3>ただし書き（効果を言い過ぎないために）</h3>
+  <details class="doc" id="about">
+    <summary>この地図のしくみと、ただし書き</summary>
     <ul>
-      <li>昔の陸地の形は、<b>今の海岸線をそのまま回したもの</b>です。昔は海の高さも陸の形もちがったので、「このプレートがどこにあったか」を見るための図だと考えてください。</li>
-      <li>モデルで「まだ存在しない」とされている陸地（たとえば 3000 万年前より前の西日本）は、<b>その年代の位置に今の輪郭を薄く描いています</b>。輪郭はまだ無くても、そのプレートの回転はモデルに定義されているので、その位置に置いています。回転が途切れる陸片だけは、その時点でいちばん近い陸地の回転に乗り換えます（推定）。「表示」で消せます。</li>
-      <li>日本列島の 2000 万〜1500 万年前の動き（観音開き）だけは、プレート運動モデルの外から足した概略です。回転の軸や角度は単純化しています。</li>
-      <li>2 億 5000 万年前より昔は、研究者によって大陸の位置の考えが分かれます。5 億年前より昔はとくに大きくちがいます。画面の「確かさ」を目安にしてください。</li>
-      <li>年表の出来事は小学生向けに言葉を選んでいます。年代はおおよその値です。</li>
+      <li>研究者のプレート運動モデル（EarthByte・Müller et al. 2022）で、<b>今の海岸線をそのまま昔の位置へ回して</b>います。昔の海岸線の形ではありません。</li>
+      <li>薄い点線の陸地は、モデルにまだ輪郭が無い時代の陸地です（位置はそのプレートの回転で置いています）。</li>
+      <li>約2000万〜1500万年前の<b>日本海の開きだけは、モデルに入っていない</b>ため、観音開きモデル（Otofuji ほか 1985）を単純化して足した概略です。</li>
     </ul>
-    <h3>参加する</h3>
-    <p>年表の出来事（<code>data/events.json</code>）や見る場所（<code>data/regions.json</code>）は、ブラウザだけで書き足せます。やり方は <a href="https://github.com/k-ito-schoolagent/world-map/blob/main/CONTRIBUTING.md" rel="noopener">CONTRIBUTING.md</a> を読んでください。GitHub の練習にも使ってください。</p>
-  </section>
+    <p class="doc-more"><a href="https://github.com/k-ito-schoolagent/world-map#しくみ" rel="noopener">データと計算のくわしい説明（README）</a></p>
+  </details>
 </main>
 
 <footer>
