@@ -90,12 +90,14 @@ python3 _data/verify.py    # 公式の reconstruct_points / coastlines と比べ
 - プレート運動モデル: **Müller et al. (2022)**。Merdith et al. (2021) の相対運動に、マントル基準系を合わせたもの（0〜10 億年前）
 - 海岸線: EarthByte の `shapes_coastlines_Merdith_etal.gpmlz`（プレート番号と有効期間つき）。およそ 1 万 km² 以上の陸地を残し、日本のまわりは 400 km² 以上を残しています
 - 回転: `get_quaternions` を 0〜50 Ma は 1 Ma ごと、〜250 Ma は 2 Ma ごと、〜1000 Ma は 5 Ma ごとに標本化し、そのあいだは球面線形補間
-- 検証: 12 地点の復元位置が公式と 0.00° で一致、6 つの年代で陸地の重なり率（2° 格子）が 0.99 以上
+- 日本海の開き: GPlates の全球モデル（MULLER2022・MULLER2019・ZAHIROVIC2022 のいずれも）には約 2000 万〜1500 万年前の日本海の急な開きが入っておらず、日本列島は大陸と一緒に動きます。そこで `_data/build.py` で Otofuji ほか (1985) の「観音開き」モデルを単純化して重ねています（西南日本は北部九州付近を軸に時計回り、東北日本は北海道北部付近を軸に反時計回りに約 45°。15〜20 Ma のあいだに徐々に閉じ、それより昔は閉じたまま大陸と一緒に動く）。対象のプレート番号は `data/pieces.json` の `japanSea` に記録
+- 検証: 日本列島以外の 9 地点の復元位置が公式と 0.00° で一致、6 つの年代で陸地の重なり率（2° 格子、日本列島を除く）が 0.99 以上
 
 ### ただし書き（効果を言い過ぎないために）
 
 - 昔の陸地の形は、**今の海岸線をそのまま回したもの**です。昔の海岸線や海の高さを再現したものではありません。「このプレートがどこにあったか」を見るための図です
 - モデルで「まだ存在しない」とされる陸地（たとえば 3000 万年前より前の西日本）は、**その時点でいちばん近い陸地の回転に乗り換えて薄く描いています**（点線）。見やすさのための推定で、研究結果ではありません。「表示」で消せます。近くに陸地がない島（ハワイなど）はその年代で消えます
+- 日本列島の 2000 万〜1500 万年前の動き（観音開き）は、プレート運動モデルの外から足した概略です（LEVEL 2）。回転の軸や角度は研究の図を手で単純化したもので、西南日本と東北日本が閉じた状態では重なって見えることがあります
 - 確かさの目安: 2 億 5000 万年前まで（LEVEL 3）は研究者のあいだでよく一致、5 億 4000 万年前まで（LEVEL 2）はおおまかに一致、それより昔（LEVEL 1）は資料によって大きくちがいます
 - 年表の出来事は小学生向けに言葉を選び、年代はおおよその値です。出典は `data/events.json` に書き足してください
 
@@ -104,6 +106,7 @@ python3 _data/verify.py    # 公式の reconstruct_points / coastlines と比べ
 - Müller, R. D., Flament, N., Cannon, J., Tetley, M. G., Williams, S. E., Cao, X., Bodur, Ö. F., Zahirovic, S., and Merdith, A. (2022). A tectonic-rules-based mantle reference frame since 1 billion years ago – implications for supercontinent cycles and plate–mantle system evolution. *Solid Earth*, 13, 1127–1159. https://doi.org/10.5194/se-13-1127-2022
 - Merdith, A. S. et al. (2021). Extending full-plate tectonic models into deep time: Linking the Neoproterozoic and the Phanerozoic. *Earth-Science Reviews*, 214, 103477. https://doi.org/10.1016/j.earscirev.2020.103477
 - [GPlates Web Service](https://gwsdoc.gplates.org/)（EarthByte Group, The University of Sydney）
+- Otofuji, Y., Matsuda, T., and Nohda, S. (1985). Opening mode of the Japan Sea inferred from the palaeomagnetism of the Japan Arc. *Nature*, 317, 603–604.
 - 地質時代の区分と年代: International Commission on Stratigraphy, International Chronostratigraphic Chart (2023)
 - [d3-geo](https://d3js.org/d3-geo)
 

@@ -137,6 +137,8 @@ test("実データ: 回転表と陸片が読め、現在は恒等回転、すべ
   assert.ok(pieces.length > 500);
   for (const p of pieces) {
     for (const [, pid] of p.segs) assert.ok(rot.index.has(pid), `plate ${pid}`);
+    // ちょうど ±180° / ±90° の頂点は、現在の地図で d3 の切り抜きが裏返る原因になる
+    for (const [x, y] of p.ring) assert.ok(Math.abs(x) < 180 && Math.abs(y) < 90, `piece ${p.pid} vertex on the antimeridian or pole`);
     const q0 = pieceRotation(p, rot, 0);
     near(Math.abs(q0[0]), 1, 1e-4, `piece ${p.pid} at 0`);
     assert.ok(p.ring.length >= 4);

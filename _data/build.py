@@ -44,6 +44,16 @@ TOL_JAPAN = 0.03
 ATTACH_MAX_DEG = 4.0
 # 日本列島とみなさない（大陸側の）プレート番号
 MAINLAND_PIDS = {301, 401, 430, 453, 454, 455, 499, 601, 602, 619, 621, 4100}
+# 日本海の開き（観音開きモデル）。GPlates の全球モデルには日本海の急な開き（約2000万〜1500万年前）が
+# 入っていないので、Otofuji ほか (1985) の「観音開き」を単純化して重ねる:
+# 西南日本は北部九州付近を軸に時計回り、東北日本は北海道北部付近を軸に反時計回りに約45°。
+# 現在→過去の向きに 15 Ma から 20 Ma にかけて徐々に閉じ、20 Ma より昔は閉じたまま大陸と一緒に動かす。
+DOOR_OPEN_END = 15.0
+DOOR_OPEN_START = 20.0
+DOORS = {
+    "sw": {"pole": (129.5, 33.5), "angle": 45.0, "pids": (630, 631)},
+    "ne": {"pole": (141.5, 45.5), "angle": -45.0, "pids": (624, 625, 626, 627, 628, 629)},
+}
 
 
 # ---------- 取得 ----------
@@ -318,6 +328,8 @@ def main():
         if area < (AREA_MIN_JAPAN if jp else AREA_MIN_KM2):
             continue
         s_ring = simplify(ring, TOL_JAPAN if jp else TOL_DEG)
+        # ちょうど ±180° や ±90° の頂点は、回転していない地図で d3 の切り抜きが裏返るので少し内側へ
+        s_ring = [[max(-179.99, min(179.99, x)), max(-89.99, min(89.99, y))] for x, y in s_ring]
         pieces.append(
             {
                 "pid": pid,
@@ -367,6 +379,22 @@ def main():
                     raise SystemExit(f"回転の並びが昇順でない（プレート {pid}、{t} Ma）: {a} ≠ {b}")
         print(f"   {min(s + CH, len(pids))}/{len(pids)}", end="\r")
     print()
+    print("3b) 日本海の開き（観音開きモデル）を重ねる")
+    door_pids = set()
+    for door in DOORS.values():
+        axis = ll2xyz(*door["pole"])
+        for pid in door["pids"]:
+            if pid not in q:
+                continue
+            door_pids.add(pid)
+            for k, t in enumerate(times):
+                f = max(0.0, min(1.0, (t - DOOR_OPEN_END) / (DOOR_OPEN_START - DOOR_OPEN_END)))
+                if f <= 0:
+                    continue
+                th = math.radians(door["angle"] * f)
+                d = [math.cos(th / 2)] + [float(a) * math.sin(th / 2) for a in axis]
+                q[pid][k] = qmul(q[pid][k], d)
+    print(f"   対象プレート: {sorted(door_pids)}")
     rot = Rot(times, q)
 
     print("4) 回転が続く年代（恒等回転 = 回転の木にない）を調べる")
@@ -425,6 +453,7 @@ def main():
         "maxAge": max_age,
         "source": "EarthByte / GPlates Web Service (CC BY 4.0)",
         "coastlines": fname,
+        "japanSea": {"note": "日本海の開きは Otofuji ほか (1985) の観音開きモデルを単純化して加えたもの（GPlates のモデルには無い）", "pids": sorted(door_pids), "open": [DOOR_OPEN_START, DOOR_OPEN_END]},
         "generated": time.strftime("%Y-%m-%d"),
         "pieces": pieces,
     }

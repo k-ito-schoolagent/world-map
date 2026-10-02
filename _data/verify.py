@@ -68,10 +68,13 @@ def check_points(P, rot):
     fails = 0
     for age in AGES_POINTS:
         names, lons, lats, mine = [], [], [], []
+        door = set(P.get("japanSea", {}).get("pids", []))
         for name, (lon, lat) in POINTS.items():
             p = piece_for(pieces, lon, lat)
             if p is None or age > p["until"]:
                 continue
+            if p["pid"] in door:
+                continue  # 日本列島は観音開きモデルを重ねているので公式とは一致しない（照合対象外）
             qv = B.piece_rotation(p["segs"], rot, age)
             v = B.qrot_many(qv, np.array([B.ll2xyz(lon, lat)]))[0]
             names.append(name)
@@ -136,6 +139,15 @@ def raster(polys, lon_grid, lat_grid):
     return mask
 
 
+def in_japan_door(ring):
+    """公式の復元のうち、観音開きを重ねた日本列島の範囲にある面を除く（現在の位置で判定できないので
+    おおよその範囲で）。復元後の座標なので、日本付近（経度 125〜150、緯度 28〜48）にあるものを除く。"""
+    lons = [p[0] for p in ring]
+    lats = [p[1] for p in ring]
+    cx, cy = sum(lons) / len(lons), sum(lats) / len(lats)
+    return 125 <= cx <= 150 and 28 <= cy <= 48 and B.ring_area_km2(ring) < 300000
+
+
 def check_shapes(P, rot):
     print("2) 形の照合（自前の復元 vs 公式 reconstruct/coastlines、2° 格子の重なり率）")
     pieces = P["pieces"]
@@ -151,11 +163,12 @@ def check_shapes(P, rot):
             g = ft["geometry"]
             rings = g["coordinates"] if g["type"] == "Polygon" else [p[0] for p in g["coordinates"]]
             for r in rings[:1]:
-                if B.ring_area_km2(r) >= B.AREA_MIN_KM2:
+                if B.ring_area_km2(r) >= B.AREA_MIN_KM2 and not in_japan_door(r):
                     off_rings.append(r)
         mine = []
+        door = set(P.get("japanSea", {}).get("pids", []))
         for p in pieces:
-            if age > p["from"] or age > p["until"]:
+            if age > p["from"] or age > p["until"] or p["pid"] in door:
                 continue
             qv = B.piece_rotation(p["segs"], rot, age)
             V = B.qrot_many(qv, np.array([B.ll2xyz(x, y) for x, y in p["ring"]]))
